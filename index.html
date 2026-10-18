@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10232d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Play Ready Golf — Stat Tracker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--navy:#10232d;--teal:#176b70;--mint:#d8ece9;--paper:#f5f6f2;--ink:#16272e;--muted:#64747a;--line:#d6dfdf;--white:#fff;--pink:#ef9298}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.4 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--navy);color:white;padding:22px 16px 18px;text-align:center;border-radius:0 0 22px 22px}
+.eyebrow{color:var(--pink);font-weight:800;font-size:.78rem;letter-spacing:.12em}h1{font-size:1.55rem;line-height:1.1;margin:5px 0 8px}header p{margin:0;color:#c6d9dc;font-size:.9rem}
+main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 2px 8px #10232d08}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.panel-head .num{background:var(--mint);color:var(--teal);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:900}.panel-head h2{font-size:1.08rem;margin:0}.panel-head p{margin:2px 0 0;color:var(--muted);font-size:.82rem}.count{margin-left:auto;color:var(--teal);font-size:1.2rem;font-weight:850;white-space:nowrap}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.field input,.field select,.hole-score input,textarea{width:100%;border:1px solid #c7d3d4;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.field input:focus,.hole-score input:focus,textarea:focus{outline:2px solid #80b8b4;border-color:var(--teal)}
+.holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
+.scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
+.summary{background:var(--navy);color:white;border-radius:17px;padding:15px;margin:12px 0}.summary h2{margin:0 0 4px}.summary p{color:#c6d9dc;margin:0 0 12px;font-size:.85rem}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{border:1px solid #49616a;border-radius:12px;padding:12px}.stat span{display:block;color:#c6d9dc;font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em}.stat strong{display:block;font-size:1.65rem;margin-top:4px}
+button.action{border:0;border-radius:11px;padding:12px 14px;background:var(--teal);color:white;font:700 .95rem system-ui;cursor:pointer}button.secondary{background:#e8eeee;color:var(--ink)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.actions button{width:100%}.save-note{font-size:.78rem;color:var(--muted);margin:9px 2px}.status{font-size:.8rem;color:#dff5e9;margin-top:8px;min-height:1.1em}
+details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:none!important}
+@media(min-width:560px){.holes{grid-template-columns:repeat(9,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.scoregrid{grid-template-columns:repeat(6,minmax(0,1fr))}main{padding-top:20px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">PLAY READY GOLF</div><h1>SIMPLE STAT TRACKER</h1><p>Your round, your stats — saved on this device</p></header>
+<main>
+<section class="panel">
+ <div class="panel-head"><div class="num">⛳</div><div><h2>Round details</h2><p>Give each round a name so you can find it later.</p></div></div>
+ <div class="meta">
+  <div class="field"><label for="course">Course</label><input id="course" placeholder="Course name"></div>
+  <div class="field"><label for="roundDate">Date</label><input id="roundDate" type="date"></div>
+  <div class="field"><label for="roundSelect">Saved rounds</label><select id="roundSelect"></select></div>
+  <div class="field"><label for="roundName">Round label</label><input id="roundName" placeholder="e.g. Saturday round"></div>
+ </div>
+ <div class="actions"><button class="action" id="newRound">＋ New round</button><button class="action secondary" id="saveRound">Save round</button></div>
+ <div class="status" id="saveStatus" role="status" style="color:var(--teal)"></div>
+</section>
+
+<section class="panel">
+ <div class="panel-head"><div class="num">01</div><div><h2>Driving & tee shots</h2><p>Tap a hole when your tee shot is in play.</p></div><div class="count" id="teeCount">0/18</div></div>
+ <div class="holes" id="teeHoles"></div>
+</section>
+<section class="panel">
+ <div class="panel-head"><div class="num">02</div><div><h2>Approach & irons</h2><p>Record strokes from 150 yards and in.</p></div><div class="count" id="approachTotal">0</div></div>
+ <div class="scoregrid" id="approachInputs"></div>
+</section>
+<section class="panel">
+ <div class="panel-head"><div class="num">03</div><div><h2>Short game & scrambling</h2><p>Tap a hole when a chip finishes within 20 feet.</p></div><div class="count" id="chipCount">0/18</div></div>
+ <div class="holes" id="chipHoles"></div>
+</section>
+<section class="panel">
+ <div class="panel-head"><div class="num">04</div><div><h2>Putting performance</h2><p>Tap holes where you made the putt from that range.</p></div></div>
+ <h3 style="font-size:.92rem;margin:0 0 8px">Inside 8 feet <span class="count" id="insideCount" style="float:right">0/18</span></h3><div class="holes" id="insideHoles"></div>
+ <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+ <h3 style="font-size:.92rem;margin:0 0 8px">Outside 30 feet <span class="count" id="outsideCount" style="float:right">0/18</span></h3><div class="holes" id="outsideHoles"></div>
+</section>
+<section class="panel">
+ <details>
+  <summary>Hole-by-hole total score</summary>
+  <p style="font-size:.82rem;color:var(--muted)">Enter your total strokes for each hole. The score total updates automatically.</p>
+  <div class="scoregrid" id="scoreInputs"></div>
+ </details>
+</section>
+<section class="panel">
+ <div class="panel-head"><div class="num">✎</div><div><h2>Round notes</h2><p>Clubs, misses, putting observations or practice goals.</p></div></div>
+ <textarea id="notes" rows="3" placeholder="Add a note…"></textarea>
+</section>
+<section class="summary">
+ <h2>Round summary</h2><p>Live totals, saved automatically on this device.</p>
+ <div class="stats">
+  <div class="stat"><span>Total score</span><strong id="totalScore">—</strong></div>
+  <div class="stat"><span>Tee shots in play</span><strong id="sumTee">0</strong></div>
+  <div class="stat"><span>Approach strokes</span><strong id="sumApproach">0</strong></div>
+  <div class="stat"><span>Chips within 20 ft</span><strong id="sumChips">0</strong></div>
+  <div class="stat"><span>Putts made inside 8 ft</span><strong id="sumInside">0</strong></div>
+  <div class="stat"><span>Putts made outside 30 ft</span><strong id="sumOutside">0</strong></div>
+ </div>
+ <div class="actions"><button class="action" id="export">Export round (.json)</button><button class="action secondary" id="csv">Download summary (.csv)</button></div>
+ <p class="save-note" style="color:#c6d9dc;margin-top:12px">Data is stored in this browser on this device. Export a backup if you want to keep it elsewhere.</p>
+</section>
+<p class="save-note">Home-screen app preview. For reliable home-screen installation, publish these files to an HTTPS website. Browser storage can be cleared by device/browser settings, so export backups regularly.</p>
+</main>
+<script>
+const KEY='playReadyGolfRoundsV1';
+const blank=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),course:'',date:new Date().toISOString().slice(0,10),name:'',tee:Array(18).fill(false),approaches:Array(18).fill(''),chips:Array(18).fill(false),inside:Array(18).fill(false),outside:Array(18).fill(false),scores:Array(18).fill(''),notes:''});
+let rounds=[];let current=null;
+try{rounds=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){rounds=[]}
+function persist(){localStorage.setItem(KEY,JSON.stringify(rounds));}
+function ensure(){if(!rounds.length){current=blank();rounds.push(current);persist()}else current=rounds[0]}
+ensure();
+const $=id=>document.getElementById(id);
+function updateRound(){if(!current)return;current.course=$('course').value;current.date=$('roundDate').value;current.name=$('roundName').value;current.notes=$('notes').value;persist();renderSelect();updateSummary();$('saveStatus').textContent='Saved on this device';}
+function renderSelect(){let sel=$('roundSelect'),old=current?.id;sel.innerHTML='';rounds.forEach(r=>{let o=document.createElement('option');o.value=r.id;o.textContent=(r.name||r.course||'Untitled round')+' · '+(r.date||'No date');sel.append(o)});if(old)sel.value=old}
+function makeHoles(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let b=document.createElement('button');b.type='button';b.className='hole';b.innerHTML=`<span>${i+1}</span><small></small>`;b.onclick=()=>{current[key][i]=!current[key][i];renderToggles();updateRound()};root.append(b)}}
+function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside'],['outsideHoles','outside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{b.classList.toggle('active',!!current[key][i]);b.querySelector('small').textContent=current[key][i]?'✓':'Tap'})});$('teeCount').textContent=current.tee.filter(Boolean).length+'/18';$('chipCount').textContent=current.chips.filter(Boolean).length+'/18';$('insideCount').textContent=current.inside.filter(Boolean).length+'/18';$('outsideCount').textContent=current.outside.filter(Boolean).length+'/18'}
+function makeInputs(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let wrap=document.createElement('div');wrap.className='hole-score';let label=document.createElement('label');label.textContent='Hole '+(i+1);let input=document.createElement('input');input.type='number';input.min='0';input.max='99';input.inputMode='numeric';input.placeholder='—';input.value=current[key][i];input.setAttribute('aria-label',`Hole ${i+1} ${key}`);input.oninput=()=>{current[key][i]=input.value;updateRound()};wrap.append(label,input);root.append(wrap)}}
+function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('scoreInputs','scores')}
+function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=a=>a.filter(Boolean).length;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=count(current.outside);$('approachTotal').textContent=sum(current.approaches)}
+function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
+function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
+$('roundSelect').onchange=e=>selectRound(e.target.value);
+['course','roundDate','roundName','notes'].forEach(id=>$(id).addEventListener('input',updateRound));
+$('newRound').onclick=()=>{updateRound();current=blank();rounds.unshift(current);persist();loadCurrent();window.scrollTo({top:0,behavior:'smooth'})};
+$('saveRound').onclick=()=>{updateRound();$('saveStatus').textContent='Round saved ✓'};
+$('export').onclick=()=>{updateRound();download(JSON.stringify(current,null,2),`${safeName(current)}.json`,'application/json')};
+$('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],['Tee shots in play',current.tee.filter(Boolean).length],['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],['Chips within 20 ft',current.chips.filter(Boolean).length],['Putts inside 8 ft',current.inside.filter(Boolean).length],['Putts outside 30 ft',current.outside.filter(Boolean).length],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Putt outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],current.tee[i]?'Yes':'No',current.chips[i]?'Yes':'No',current.inside[i]?'Yes':'No',current.outside[i]?'Yes':'No']);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
+function safeName(r){return (r.name||r.course||'golf-round').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
+function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');loadCurrent();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>

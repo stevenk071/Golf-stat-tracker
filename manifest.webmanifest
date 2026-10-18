@@ -1,0 +1,11 @@
+{
+  "name": "Play Ready Golf Stat Tracker",
+  "short_name": "Golf Stats",
+  "description": "Save golf round stats on your device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f6f2",
+  "theme_color": "#10232d",
+  "icons": []
+}
