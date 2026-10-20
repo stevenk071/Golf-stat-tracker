@@ -16,7 +16,9 @@ header{background:var(--navy);color:white;padding:22px 16px 18px;text-align:cent
 main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 2px 8px #10232d08}
 .panel-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.panel-head .num{background:var(--mint);color:var(--teal);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:900}.panel-head h2{font-size:1.08rem;margin:0}.panel-head p{margin:2px 0 0;color:var(--muted);font-size:.82rem}.count{margin-left:auto;color:var(--teal);font-size:1.2rem;font-weight:850;white-space:nowrap}
 .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.field input,.field select,.hole-score input,textarea{width:100%;border:1px solid #c7d3d4;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.field input:focus,.hole-score input:focus,textarea:focus{outline:2px solid #80b8b4;border-color:var(--teal)}
-.holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole.no{background:#fbe4e5;border-color:var(--pink);color:#8a2f36}.hole.no small{color:#8a2f36}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
+.holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole.no{background:#fbe4e5;border-color:var(--pink);color:#8a2f36}.hole.no small{color:#8a2f36}
+.analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
+.scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
 .summary{background:var(--navy);color:white;border-radius:17px;padding:15px;margin:12px 0}.summary h2{margin:0 0 4px}.summary p{color:#c6d9dc;margin:0 0 12px;font-size:.85rem}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{border:1px solid #49616a;border-radius:12px;padding:12px}.stat span{display:block;color:#c6d9dc;font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em}.stat strong{display:block;font-size:1.65rem;margin-top:4px}
 button.action{border:0;border-radius:11px;padding:12px 14px;background:var(--teal);color:white;font:700 .95rem system-ui;cursor:pointer}button.secondary{background:#e8eeee;color:var(--ink)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.actions button{width:100%}.save-note{font-size:.78rem;color:var(--muted);margin:9px 2px}.status{font-size:.8rem;color:#dff5e9;margin-top:8px;min-height:1.1em}
@@ -48,14 +50,14 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <div class="scoregrid" id="approachInputs"></div>
 </section>
 <section class="panel">
- <div class="panel-head"><div class="num">03</div><div><h2>Short game & scrambling</h2><p>Tap once for Yes (within 6 yards), twice for No. Leave blank to skip.</p></div><div class="count" id="chipCount">0/18</div></div>
+ <div class="panel-head"><div class="num">03</div><div><h2>Short game & scrambling</h2><p>Tap once for Yes (within 20 feet), twice for No. Leave blank to skip.</p></div><div class="count" id="chipCount">0/18</div></div>
  <div class="holes" id="chipHoles"></div>
 </section>
 <section class="panel">
- <div class="panel-head"><div class="num">04</div><div><h2>Putting performance</h2><p>Inside 2.5 yards: tap once for made, twice for missed, blank to skip. Outside 10 yards: enter a number for each hole.</p></div></div>
- <h3 style="font-size:.92rem;margin:0 0 8px">Inside 2.5 yards <span class="count" id="insideCount" style="float:right">0/18</span></h3><div class="holes" id="insideHoles"></div>
+ <div class="panel-head"><div class="num">04</div><div><h2>Putting performance</h2><p>Inside 8 feet: tap once for made, twice for missed, blank to skip. Outside 30 feet: enter a number for each hole.</p></div></div>
+ <h3 style="font-size:.92rem;margin:0 0 8px">Inside 8 feet <span class="count" id="insideCount" style="float:right">0/18</span></h3><div class="holes" id="insideHoles"></div>
  <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
- <h3 style="font-size:.92rem;margin:0 0 8px">Outside 10 yards <span class="count" id="outsideCount" style="float:right">0</span></h3><div class="scoregrid" id="outsideInputs"></div>
+ <h3 style="font-size:.92rem;margin:0 0 8px">Outside 30 feet <span class="count" id="outsideCount" style="float:right">0</span></h3><div class="scoregrid" id="outsideInputs"></div>
 </section>
 <section class="panel">
  <details>
@@ -81,6 +83,11 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <div class="actions"><button class="action" id="export">Export round (.json)</button><button class="action secondary" id="csv">Download summary (.csv)</button></div>
  <p class="save-note" style="color:#c6d9dc;margin-top:12px">Data is stored in this browser on this device. Export a backup if you want to keep it elsewhere.</p>
 </section>
+<section class="summary" style="background:white;color:var(--ink);border:1px solid var(--line)">
+ <h2>Round analysis</h2><p style="color:var(--muted)">How your round compares with typical handicap levels.</p>
+ <div id="analysisList"></div>
+ <p class="save-note">Benchmarks are typical results for a 20 handicap, a 10 handicap and a scratch golfer. Results are scaled to the holes you recorded, so holes left blank don't count. The 2-putt rate counts holes where you entered 2 putts or fewer under "Outside 30 feet".</p>
+</section>
 <p class="save-note">Home-screen app preview. For reliable home-screen installation, publish these files to an HTTPS website. Browser storage can be cleared by device/browser settings, so export backups regularly.</p>
 </main>
 <script>
@@ -103,7 +110,40 @@ function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles
 function ratio(a){const y=a.filter(v=>v===true).length;return y+'/'+(y+a.filter(v=>v===false).length)}
 function makeInputs(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let wrap=document.createElement('div');wrap.className='hole-score';let label=document.createElement('label');label.textContent='Hole '+(i+1);let input=document.createElement('input');input.type='number';input.min='0';input.max='99';input.inputMode='numeric';input.placeholder='—';input.value=current[key][i];input.setAttribute('aria-label',`Hole ${i+1} ${key}`);input.oninput=()=>{current[key][i]=input.value;updateRound()};wrap.append(label,input);root.append(wrap)}}
 function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('outsideInputs','outside');makeInputs('scoreInputs','scores')}
-function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside)}
+function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside);updateAnalysis()}
+// Colour: 0 (worst) = red, about 0.4 = orange, 1 (best) = green
+function hueFor(p){return p<=50?0:p<=70?(p-50)/20*35:Math.min(125,35+(p-70)/20*90)}
+const colorFor=q=>`hsl(${hueFor(50+Math.max(0,Math.min(1,q))*50).toFixed(0)},70%,36%)`;
+const cnt=a=>{const y=a.filter(v=>v===true).length;return{y,t:y+a.filter(v=>v===false).length}};
+const filled=a=>a.filter(v=>v!==''&&v!=null&&!isNaN(Number(v))).map(Number);
+const pct=v=>Math.round(v)+'%';
+// b = benchmarks for [20 handicap, 10 handicap, scratch]; lo/hi = ends of the colour scale
+const METRICS=[
+ {id:'tee',title:'Fairways hit (tee shots in play)',goodHigh:true,lo:50,hi:100,b:[68,79,89],fmt:pct,endL:'50%<br>or less',endR:'100%',empty:'Record tee shots to see your result.',
+  calc:r=>{const{y,t}=cnt(r.tee);return t?{v:y/t*100,detail:`${y} of ${t} tee shots in play`}:null}},
+ {id:'app',title:'Strokes from 150 yards in (average per hole)',goodHigh:false,lo:2.5,hi:5,b:[4,3.5,3],fmt:v=>v.toFixed(1),endL:'5.0+',endR:'2.5',empty:'Enter approach strokes to see your result.',
+  calc:r=>{const a=filled(r.approaches);if(!a.length)return null;const s=a.reduce((n,v)=>n+v,0);return{v:s/a.length,detail:`${s} strokes over ${a.length} holes`}}},
+ {id:'chip',title:'Chips finishing within 20 feet',goodHigh:true,lo:30,hi:90,b:[50,60,75],fmt:pct,endL:'30%',endR:'90%',empty:'Record chips to see your result.',
+  calc:r=>{const{y,t}=cnt(r.chips);return t?{v:y/t*100,detail:`${y} of ${t} chips`}:null}},
+ {id:'two',title:'2-putt rate from 30+ feet',goodHigh:true,lo:40,hi:90,b:[55,67,78],fmt:pct,endL:'40%',endR:'90%',empty:'Enter putts outside 30 feet to see your result.',
+  calc:r=>{const a=filled(r.outside);if(!a.length)return null;const y=a.filter(v=>v<=2).length;return{v:y/a.length*100,detail:`${y} of ${a.length} holes with 2 putts or fewer`}}},
+ {id:'in8',title:'Make rate inside 8 feet',goodHigh:true,lo:40,hi:90,b:[58,68,77],fmt:pct,endL:'40%',endR:'90%',empty:'Record putts inside 8 feet to see your result.',
+  calc:r=>{const{y,t}=cnt(r.inside);return t?{v:y/t*100,detail:`${y} of ${t} putts made`}:null}}
+];
+function buildAnalysis(){const root=$('analysisList');root.innerHTML='';
+ const stops=[];for(let p=50;p<=100;p+=5)stops.push(`hsl(${hueFor(p).toFixed(0)},70%,36%) ${(p-50)*2}%`);const grad=`linear-gradient(to right,${stops.join(',')})`;
+ METRICS.forEach(m=>{const pos=v=>Math.max(0,Math.min(100,(m.goodHigh?v-m.lo:m.hi-v)/(m.hi-m.lo)*100));
+  const d=document.createElement('div');d.className='metric';
+  d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${m.id}Box"><strong id="${m.id}Big">—</strong><small id="${m.id}Detail"></small><em id="${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>`;
+  root.append(d)})}
+function updateAnalysis(){METRICS.forEach(m=>{const box=$(m.id+'Box'),ptr=$(m.id+'Ptr'),r=m.calc(current);
+ if(!r){ptr.style.display='none';box.style.background='';box.style.color='';$(m.id+'Big').textContent='—';$(m.id+'Detail').textContent='';$(m.id+'Label').textContent=m.empty;return}
+ const s=m.goodHigh?1:-1,x=s*r.v,[a,b,c]=m.b.map(v=>s*v);
+ const q=Math.max(0,Math.min(1,(m.goodHigh?r.v-m.lo:m.hi-r.v)/(m.hi-m.lo)));
+ ptr.style.display='block';ptr.style.left=q*100+'%';
+ box.style.background=colorFor(q);box.style.color='#fff';
+ $(m.id+'Big').textContent=m.fmt(r.v);$(m.id+'Detail').textContent=r.detail;
+ $(m.id+'Label').textContent=x<a-(b-a)/2?'Below the typical 20 handicap':x<(a+b)/2?'In line with a 20 handicap':x<(b+c)/2?'In line with a 10 handicap':'Scratch-golfer level'})}
 function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
@@ -116,7 +156,7 @@ function yn(v){return v===true?'Yes':v===false?'No':''}
 function csvStat(label,a){const y=a.filter(v=>v===true).length,t=y+a.filter(v=>v===false).length;return [[label+' - Yes',y],[label+' - recorded',t],[label+' - %',t?Math.round(y/t*1000)/10:'']]}
 function safeName(r){return (r.name||r.course||'golf-round').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
 function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');loadCurrent();
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildAnalysis();loadCurrent();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
