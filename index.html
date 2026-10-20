@@ -48,14 +48,14 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <div class="scoregrid" id="approachInputs"></div>
 </section>
 <section class="panel">
- <div class="panel-head"><div class="num">03</div><div><h2>Short game & scrambling</h2><p>Tap a hole when a chip finishes within 20 feet.</p></div><div class="count" id="chipCount">0/18</div></div>
+ <div class="panel-head"><div class="num">03</div><div><h2>Short game & scrambling</h2><p>Tap a hole when a chip finishes within 6 yards.</p></div><div class="count" id="chipCount">0/18</div></div>
  <div class="holes" id="chipHoles"></div>
 </section>
 <section class="panel">
- <div class="panel-head"><div class="num">04</div><div><h2>Putting performance</h2><p>Inside 8 feet: tap holes where you made the putt. Outside 30 feet: enter a number for each hole.</p></div></div>
- <h3 style="font-size:.92rem;margin:0 0 8px">Inside 8 feet <span class="count" id="insideCount" style="float:right">0/18</span></h3><div class="holes" id="insideHoles"></div>
+ <div class="panel-head"><div class="num">04</div><div><h2>Putting performance</h2><p>Tap holes where you made the putt from that range.</p></div></div>
+ <h3 style="font-size:.92rem;margin:0 0 8px">Inside 2.5 yards <span class="count" id="insideCount" style="float:right">0/18</span></h3><div class="holes" id="insideHoles"></div>
  <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
- <h3 style="font-size:.92rem;margin:0 0 8px">Outside 30 feet <span class="count" id="outsideCount" style="float:right">0</span></h3><div class="scoregrid" id="outsideInputs"></div>
+ <h3 style="font-size:.92rem;margin:0 0 8px">Outside 10 yards <span class="count" id="outsideCount" style="float:right">0/18</span></h3><div class="holes" id="outsideHoles"></div>
 </section>
 <section class="panel">
  <details>
@@ -76,7 +76,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
   <div class="stat"><span>Approach strokes</span><strong id="sumApproach">0</strong></div>
   <div class="stat"><span>Chips within 20 ft</span><strong id="sumChips">0</strong></div>
   <div class="stat"><span>Putts made inside 8 ft</span><strong id="sumInside">0</strong></div>
-  <div class="stat"><span>Outside 30 ft total</span><strong id="sumOutside">0</strong></div>
+  <div class="stat"><span>Putts made outside 30 ft</span><strong id="sumOutside">0</strong></div>
  </div>
  <div class="actions"><button class="action" id="export">Export round (.json)</button><button class="action secondary" id="csv">Download summary (.csv)</button></div>
  <p class="save-note" style="color:#c6d9dc;margin-top:12px">Data is stored in this browser on this device. Export a backup if you want to keep it elsewhere.</p>
@@ -85,11 +85,9 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 </main>
 <script>
 const KEY='playReadyGolfRoundsV1';
-const blank=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),course:'',date:new Date().toISOString().slice(0,10),name:'',tee:Array(18).fill(false),approaches:Array(18).fill(''),chips:Array(18).fill(false),inside:Array(18).fill(false),outside:Array(18).fill(''),scores:Array(18).fill(''),notes:''});
+const blank=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),course:'',date:new Date().toISOString().slice(0,10),name:'',tee:Array(18).fill(false),approaches:Array(18).fill(''),chips:Array(18).fill(false),inside:Array(18).fill(false),outside:Array(18).fill(false),scores:Array(18).fill(''),notes:''});
 let rounds=[];let current=null;
 try{rounds=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){rounds=[]}
-// Migrate rounds saved when "outside 30 ft" was a tap toggle (true/false) to number entries
-rounds.forEach(r=>{r.outside=Array.from({length:18},(_,i)=>{const v=(r.outside||[])[i];return v===true?1:(v===false||v==null)?'':v})});
 function persist(){localStorage.setItem(KEY,JSON.stringify(rounds));}
 function ensure(){if(!rounds.length){current=blank();rounds.push(current);persist()}else current=rounds[0]}
 ensure();
@@ -97,10 +95,10 @@ const $=id=>document.getElementById(id);
 function updateRound(){if(!current)return;current.course=$('course').value;current.date=$('roundDate').value;current.name=$('roundName').value;current.notes=$('notes').value;persist();renderSelect();updateSummary();$('saveStatus').textContent='Saved on this device';}
 function renderSelect(){let sel=$('roundSelect'),old=current?.id;sel.innerHTML='';rounds.forEach(r=>{let o=document.createElement('option');o.value=r.id;o.textContent=(r.name||r.course||'Untitled round')+' · '+(r.date||'No date');sel.append(o)});if(old)sel.value=old}
 function makeHoles(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let b=document.createElement('button');b.type='button';b.className='hole';b.innerHTML=`<span>${i+1}</span><small></small>`;b.onclick=()=>{current[key][i]=!current[key][i];renderToggles();updateRound()};root.append(b)}}
-function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{b.classList.toggle('active',!!current[key][i]);b.querySelector('small').textContent=current[key][i]?'✓':'Tap'})});$('teeCount').textContent=current.tee.filter(Boolean).length+'/18';$('chipCount').textContent=current.chips.filter(Boolean).length+'/18';$('insideCount').textContent=current.inside.filter(Boolean).length+'/18'}
+function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside'],['outsideHoles','outside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{b.classList.toggle('active',!!current[key][i]);b.querySelector('small').textContent=current[key][i]?'✓':'Tap'})});$('teeCount').textContent=current.tee.filter(Boolean).length+'/18';$('chipCount').textContent=current.chips.filter(Boolean).length+'/18';$('insideCount').textContent=current.inside.filter(Boolean).length+'/18';$('outsideCount').textContent=current.outside.filter(Boolean).length+'/18'}
 function makeInputs(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let wrap=document.createElement('div');wrap.className='hole-score';let label=document.createElement('label');label.textContent='Hole '+(i+1);let input=document.createElement('input');input.type='number';input.min='0';input.max='99';input.inputMode='numeric';input.placeholder='—';input.value=current[key][i];input.setAttribute('aria-label',`Hole ${i+1} ${key}`);input.oninput=()=>{current[key][i]=input.value;updateRound()};wrap.append(label,input);root.append(wrap)}}
-function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('outsideInputs','outside');makeInputs('scoreInputs','scores')}
-function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=a=>a.filter(Boolean).length;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside)}
+function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('scoreInputs','scores')}
+function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=a=>a.filter(Boolean).length;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=count(current.outside);$('approachTotal').textContent=sum(current.approaches)}
 function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
@@ -108,10 +106,10 @@ $('roundSelect').onchange=e=>selectRound(e.target.value);
 $('newRound').onclick=()=>{updateRound();current=blank();rounds.unshift(current);persist();loadCurrent();window.scrollTo({top:0,behavior:'smooth'})};
 $('saveRound').onclick=()=>{updateRound();$('saveStatus').textContent='Round saved ✓'};
 $('export').onclick=()=>{updateRound();download(JSON.stringify(current,null,2),`${safeName(current)}.json`,'application/json')};
-$('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],['Tee shots in play',current.tee.filter(Boolean).length],['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],['Chips within 20 ft',current.chips.filter(Boolean).length],['Putts inside 8 ft',current.inside.filter(Boolean).length],['Outside 30 ft total',current.outside.reduce((n,v)=>n+(Number(v)||0),0)],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],current.tee[i]?'Yes':'No',current.chips[i]?'Yes':'No',current.inside[i]?'Yes':'No',current.outside[i]]);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
+$('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],['Tee shots in play',current.tee.filter(Boolean).length],['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],['Chips within 20 ft',current.chips.filter(Boolean).length],['Putts inside 8 ft',current.inside.filter(Boolean).length],['Putts outside 30 ft',current.outside.filter(Boolean).length],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Putt outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],current.tee[i]?'Yes':'No',current.chips[i]?'Yes':'No',current.inside[i]?'Yes':'No',current.outside[i]?'Yes':'No']);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
 function safeName(r){return (r.name||r.course||'golf-round').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
 function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');loadCurrent();
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');makeHoles('outsideHoles','outside');loadCurrent();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
