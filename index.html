@@ -110,7 +110,10 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 <div id="viewHistory" class="hidden">
  <section class="panel">
   <div class="panel-head"><div class="num">📈</div><div><h2>Round history</h2><p>Averages across your most recent rounds.</p></div></div>
-  <div class="field"><label for="histN">Show</label><select id="histN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
+  <div class="meta">
+   <div class="field"><label for="histCourse">Course</label><select id="histCourse"><option value="*">All courses</option></select></div>
+   <div class="field"><label for="histN">Show</label><select id="histN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
+  </div>
   <p class="save-note" id="histInfo"></p>
  </section>
  <section class="summary">
@@ -225,11 +228,18 @@ function updateAnalysis(){updateMetrics('r',m=>m.calc(current))}
 const hasData=r=>[r.tee,r.chips,r.inside].some(a=>(a||[]).some(v=>v===true||v===false))||filled(r.approaches||[]).length>0||filled(r.outside||[]).length>0||filled(r.scores||[]).length>0;
 const roundScore=r=>{const a=filled(r.scores||[]);return a.length===18?a.reduce((n,v)=>n+v,0):null};
 const roundTitle=r=>(r.name||r.course||'Untitled round')+(r.date?' · '+r.date:'');
-function historyRounds(){const n=Number($('histN').value)||3;
+function historyRounds(){const n=Number($('histN').value)||3,course=$('histCourse').value;
  // newest first by date; rounds without a date keep their saved order (newest first) after dated ones
- return rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).slice(0,n).map(x=>x.r)}
-function renderHistory(){const list=historyRounds(),n=Number($('histN').value)||3;
- $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''}${list.length<n?` (you have saved ${list.length} with data so far)`:''}.`:'No rounds with data yet. Record a round first.';
+ return rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)&&(course==='*'||courseKey(x.r.course)===course)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).slice(0,n).map(x=>x.r)}
+function renderHistory(){
+ const courseSel=$('histCourse'),prev=courseSel.value,courses=new Map();
+ rounds.filter(hasData).forEach(r=>{const k=courseKey(r.course);if(!courses.has(k))courses.set(k,(r.course||'').trim()||'(no course name)')});
+ courseSel.innerHTML='';const all=document.createElement('option');all.value='*';all.textContent='All courses';courseSel.append(all);
+ courses.forEach((label,k)=>{const o=document.createElement('option');o.value=k;o.textContent=label;courseSel.append(o)});
+ courseSel.value=prev==='*'||courses.has(prev)?prev:'*';
+ const list=historyRounds(),n=Number($('histN').value)||3,selectedCourse=courseSel.value==='*'?'all courses':courses.get(courseSel.value);
+
+ $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''} from ${selectedCourse}${list.length<n?` (that's all the matching rounds with data so far)`:''}.`:`No rounds with data for ${selectedCourse}. Record a round first.`;
  updateMetrics('h',m=>{const vals=list.map(r=>m.calc(r)).filter(Boolean);if(!vals.length)return null;return{v:vals.reduce((t,x)=>t+x.v,0)/vals.length,detail:`Average of ${vals.length} round${vals.length>1?'s':''}`}});
  renderTrends(list);
  const sc=list.map(roundScore).filter(v=>v!==null);
@@ -319,7 +329,7 @@ function renderHoleDetail(list,data){const box=$('holeDetail');if(holeSel===null
 function setN(v){$('histN').value=v;$('holesN').value=v;if(!$('viewHistory').classList.contains('hidden'))renderHistory();if(!$('viewHoles').classList.contains('hidden'))renderHoles()}
 function showView(v){['round','hist','holes'].forEach(k=>{const id={round:'viewRound',hist:'viewHistory',holes:'viewHoles'}[k],tab={round:'tabRound',hist:'tabHist',holes:'tabHoles'}[k];$(id).classList.toggle('hidden',v!==k);$(tab).classList.toggle('on',v===k)});if(v==='hist')renderHistory();if(v==='holes')renderHoles();window.scrollTo({top:0})}
 $('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('tabHoles').onclick=()=>showView('holes');
-$('histN').onchange=e=>setN(e.target.value);$('holesN').onchange=e=>setN(e.target.value);$('holesCourse').onchange=()=>{holeSel=null;renderHoles()};
+$('histN').onchange=e=>setN(e.target.value);$('histCourse').onchange=renderHistory;$('holesN').onchange=e=>setN(e.target.value);$('holesCourse').onchange=()=>{holeSel=null;renderHoles()};
 // ---- Backup & restore
 const BK_KEY='playReadyGolfLastBackup';
 const getLS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
