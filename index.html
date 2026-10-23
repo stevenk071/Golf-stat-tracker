@@ -22,6 +22,7 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .banner{max-width:760px;margin:10px auto 0;padding:0 12px}.banner button{width:100%;text-align:left;background:#fff3e0;border:1px solid #f0b36a;color:#7a4300;border-radius:11px;padding:10px 12px;font:600 .88rem system-ui;cursor:pointer}.bmsg{font-size:.85rem;min-height:1.2em;margin:10px 2px 0;color:var(--teal);font-weight:600}
 .action.danger{background:#fbe4e5;color:#8a2f36;grid-column:1/-1}.stat small{display:block;font-size:.72rem;color:#c6d9dc;margin-top:3px}.prog{font-weight:600;font-size:.8rem;color:var(--muted);margin-left:6px}.prog.ok{color:var(--teal)}.focus{background:#e8f3f1;border-left:4px solid var(--teal);border-radius:10px;padding:11px 13px;margin:0 0 6px;font-size:.9rem}.focus b{color:var(--teal)}
 .trend{margin:2px 0 0}.trend .tlabel{font-size:.78rem;font-weight:700;color:var(--muted);margin:4px 2px 2px}.trend svg{width:100%;height:auto;display:block}.trend text{font:10px system-ui,-apple-system,sans-serif;fill:var(--muted)}.trend .tnote{font-size:.8rem;color:var(--muted);margin:2px 2px 0}.trend .tnote b{color:var(--ink)}
+.hole.skip{background:#eef1f1;border-style:dashed;color:#9aa8ab;cursor:not-allowed}.hole.skip small{color:#9aa8ab}.hole.par{background:#fff}.hole.par.set{background:var(--mint);border-color:#9fcfc9;color:var(--teal)}.hole.par.set small{color:var(--teal);font-weight:700}.setup{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}.setup .prog{margin-left:8px}
 .rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
@@ -47,6 +48,11 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  </div>
  <div class="actions"><button class="action" id="newRound">＋ New round</button><button class="action secondary" id="saveRound">Save round</button><button class="action danger" id="deleteRound" type="button">Delete this round</button></div>
  <div class="status" id="saveStatus" role="status" style="color:var(--teal)"></div>
+ <details class="setup">
+  <summary>Course setup (par per hole) <span class="prog" id="parProg"></span></summary>
+  <p style="font-size:.82rem;color:var(--muted);margin:6px 0 10px">Tap a hole to cycle Par 4 → 5 → 3 → blank. Pars are remembered for this course name, so you only enter them once. Par 3s are skipped automatically in "Driving &amp; tee shots", and scores are shown against par.</p>
+  <div class="holes" id="parHoles"></div>
+ </details>
 </section>
 
 <section class="panel">
@@ -107,10 +113,18 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <section class="summary">
   <h2>Scores</h2><p>Total score for rounds where all 18 holes were entered in "Hole-by-hole total score".</p>
   <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-   <div class="stat"><span>Best score</span><strong id="histBest">—</strong></div>
-   <div class="stat"><span>Average score</span><strong id="histAvg">—</strong></div>
+   <div class="stat"><span>Best score</span><strong id="histBest">—</strong><small id="histBestNote"></small></div>
+   <div class="stat"><span>Average score</span><strong id="histAvg">—</strong><small id="histAvgNote"></small></div>
   </div>
   <ul class="rlist" id="histList"></ul>
+ </section>
+ <section class="summary">
+  <h2>Scoring by par type</h2><p>Average strokes per hole on par 3s, 4s and 5s, across the selected rounds. Needs pars (Course setup) and hole-by-hole scores.</p>
+  <div class="stats" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+   <div class="stat"><span>Par 3</span><strong id="pt3">—</strong><small id="pt3n"></small></div>
+   <div class="stat"><span>Par 4</span><strong id="pt4">—</strong><small id="pt4n"></small></div>
+   <div class="stat"><span>Par 5</span><strong id="pt5">—</strong><small id="pt5n"></small></div>
+  </div>
  </section>
  <section class="summary" style="background:white;color:var(--ink);border:1px solid var(--line)">
   <h2>Average analysis</h2><p style="color:var(--muted)">Each stat is the average of the per-round results, compared with typical handicap levels.</p>
@@ -128,25 +142,27 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 </main>
 <script>
 const KEY='playReadyGolfRoundsV1';
-const blank=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),course:'',date:new Date().toISOString().slice(0,10),name:'',v:2,tee:Array(18).fill(null),approaches:Array(18).fill(''),chips:Array(18).fill(null),inside:Array(18).fill(null),outside:Array(18).fill(''),scores:Array(18).fill(''),notes:''});
+const blank=()=>({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),course:'',date:new Date().toISOString().slice(0,10),name:'',v:2,pars:Array(18).fill(null),tee:Array(18).fill(null),approaches:Array(18).fill(''),chips:Array(18).fill(null),inside:Array(18).fill(null),outside:Array(18).fill(''),scores:Array(18).fill(''),notes:''});
 let rounds=[];let current=null;
 try{rounds=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){rounds=[]}
 // Migrate rounds saved when "outside 30 ft" was a tap toggle (true/false) to number entries
 rounds.forEach(r=>{r.outside=Array.from({length:18},(_,i)=>{const v=(r.outside||[])[i];return v===true?1:(v===false||v==null)?'':v})});
 // Migrate older rounds: previously an unselected hole was stored as false. Now false = "No" and null = not recorded.
 rounds.forEach(r=>{if(r.v!==2){['tee','chips','inside'].forEach(k=>{r[k]=Array.from({length:18},(_,i)=>(r[k]||[])[i]===true?true:null)});r.v=2}});
+rounds.forEach(r=>{r.pars=Array.from({length:18},(_,i)=>{const v=Array.isArray(r.pars)?r.pars[i]:null;return v===3||v===4||v===5?v:null})});
 function persist(){localStorage.setItem(KEY,JSON.stringify(rounds));}
 function ensure(){if(!rounds.length){current=blank();rounds.push(current);persist()}else current=rounds[0]}
 ensure();
 const $=id=>document.getElementById(id);
 function updateRound(){if(!current)return;current.course=$('course').value;current.date=$('roundDate').value;current.name=$('roundName').value;current.notes=$('notes').value;persist();renderSelect();updateSummary();refreshBackupUI();$('saveStatus').textContent='Saved on this device';}
 function renderSelect(){let sel=$('roundSelect'),old=current?.id;sel.innerHTML='';rounds.forEach(r=>{let o=document.createElement('option');o.value=r.id;o.textContent=(r.name||r.course||'Untitled round')+' · '+(r.date||'No date');sel.append(o)});if(old)sel.value=old}
-function makeHoles(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let b=document.createElement('button');b.type='button';b.className='hole';b.innerHTML=`<span>${i+1}</span><small></small>`;b.onclick=()=>{const v=current[key][i];current[key][i]=v===true?false:v===false?null:true;renderToggles();updateRound()};root.append(b)}}
-function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{const v=current[key][i];b.classList.toggle('active',v===true);b.classList.toggle('no',v===false);b.querySelector('small').textContent=v===true?'Yes':v===false?'No':'Tap'})});$('teeCount').textContent=ratio(current.tee);$('chipCount').textContent=ratio(current.chips);$('insideCount').textContent=ratio(current.inside)}
+function makeHoles(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let b=document.createElement('button');b.type='button';b.className='hole';b.innerHTML=`<span>${i+1}</span><small></small>`;b.onclick=()=>{if(key==='tee'&&current.pars[i]===3)return;const v=current[key][i];current[key][i]=v===true?false:v===false?null:true;renderToggles();updateRound()};root.append(b)}}
+const teeArr=r=>(r.tee||[]).map((v,i)=>(r.pars&&r.pars[i]===3)?null:v);
+function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{const skip=key==='tee'&&current.pars[i]===3,v=skip?null:current[key][i];b.disabled=skip;b.classList.toggle('skip',skip);b.classList.toggle('active',v===true);b.classList.toggle('no',v===false);b.querySelector('small').textContent=skip?'Par 3':v===true?'Yes':v===false?'No':'Tap'})});$('teeCount').textContent=ratio(teeArr(current));$('chipCount').textContent=ratio(current.chips);$('insideCount').textContent=ratio(current.inside)}
 function ratio(a){const y=a.filter(v=>v===true).length;return y+'/'+(y+a.filter(v=>v===false).length)}
 function makeInputs(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let wrap=document.createElement('div');wrap.className='hole-score';let label=document.createElement('label');label.textContent='Hole '+(i+1);let input=document.createElement('input');input.type='number';input.min='0';input.max='99';input.inputMode='numeric';input.placeholder='—';input.value=current[key][i];input.setAttribute('aria-label',`Hole ${i+1} ${key}`);input.oninput=()=>{current[key][i]=input.value;updateRound()};wrap.append(label,input);root.append(wrap)}}
 function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('outsideInputs','outside');makeInputs('scoreInputs','scores')}
-function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';{const n=filled(current.scores).length,done=n===18;$('scoreProg').textContent=done?'✓ 18 of 18 holes entered':n?`${n} of 18 holes entered`:'not entered yet';$('scoreProg').classList.toggle('ok',done);$('scoreNote').textContent=done?'All 18 holes entered ✓':n?`Incomplete: ${n} of 18 holes entered`:'Enter scores under Hole-by-hole total score'}$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside);updateAnalysis()}
+function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';{const n=filled(current.scores).length,done=n===18;$('scoreProg').textContent=done?'✓ 18 of 18 holes entered':n?`${n} of 18 holes entered`:'not entered yet';$('scoreProg').classList.toggle('ok',done);{const x=roundToPar(current);$('scoreNote').textContent=done?'All 18 holes entered ✓'+(x!==null?` · ${fmtPar(x)} vs par ${totalPar(current)}`:''):n?`Incomplete: ${n} of 18 holes entered`:'Enter scores under Hole-by-hole total score'}}$('sumTee').textContent=count(teeArr(current));$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside);updateAnalysis()}
 // Colour: 0 (worst) = red, about 0.4 = orange, 1 (best) = green
 function hueFor(p){return p<=50?0:p<=70?(p-50)/20*35:Math.min(125,35+(p-70)/20*90)}
 const colorFor=q=>`hsl(${hueFor(50+Math.max(0,Math.min(1,q))*50).toFixed(0)},70%,36%)`;
@@ -156,7 +172,7 @@ const pct=v=>Math.round(v)+'%';
 // b = benchmarks for [20 handicap, 10 handicap, scratch]; lo/hi = ends of the colour scale
 const METRICS=[
  {id:'tee',title:'Fairways hit (tee shots in play)',goodHigh:true,lo:50,hi:100,b:[68,79,89],fmt:pct,endL:'50%<br>or less',endR:'100%',empty:'Record tee shots to see your result.',
-  calc:r=>{const{y,t}=cnt(r.tee);return t?{v:y/t*100,detail:`${y} of ${t} tee shots in play`}:null}},
+  calc:r=>{const{y,t}=cnt(teeArr(r));return t?{v:y/t*100,detail:`${y} of ${t} tee shots in play`}:null}},
  {id:'app',title:'Strokes from 150 yards in (average per hole)',goodHigh:false,lo:2.5,hi:5,b:[4,3.5,3],fmt:v=>v.toFixed(1),endL:'5.0+',endR:'2.5',empty:'Enter approach strokes to see your result.',
   calc:r=>{const a=filled(r.approaches);if(!a.length)return null;const s=a.reduce((n,v)=>n+v,0);return{v:s/a.length,detail:`${s} strokes over ${a.length} holes`}}},
  {id:'chip',title:'Chips finishing within 20 feet',goodHigh:true,lo:30,hi:90,b:[50,60,75],fmt:pct,endL:'30%',endR:'90%',empty:'Record chips to see your result.',
@@ -200,9 +216,15 @@ function renderHistory(){const list=historyRounds(),n=Number($('histN').value)||
  updateMetrics('h',m=>{const vals=list.map(r=>m.calc(r)).filter(Boolean);if(!vals.length)return null;return{v:vals.reduce((t,x)=>t+x.v,0)/vals.length,detail:`Average of ${vals.length} round${vals.length>1?'s':''}`}});
  renderTrends(list);
  const sc=list.map(roundScore).filter(v=>v!==null);
+ {const withScore=list.filter(r=>roundScore(r)!==null),best=withScore.reduce((a,r)=>!a||roundScore(r)<roundScore(a)?r:a,null),bx=best?roundToPar(best):null;
+  $('histBestNote').textContent=bx!==null?fmtPar(bx)+' vs par':'';
+  const tps=withScore.map(roundToPar).filter(v=>v!==null),ax=tps.length?tps.reduce((t,v)=>t+v,0)/tps.length:null;
+  $('histAvgNote').textContent=ax!==null?(ax>0?'+':'')+(Math.round(ax*10)/10)+' vs par':'';
+  [3,4,5].forEach(pt=>{let sum=0,cnt=0;list.forEach(r=>{(r.pars||[]).forEach((p,i)=>{const v=(r.scores||[])[i];if(p===pt&&v!==''&&v!=null&&!isNaN(Number(v))){sum+=Number(v);cnt++}})});
+   $('pt'+pt).textContent=cnt?(sum/cnt).toFixed(2):'—';$('pt'+pt+'n').textContent=cnt?`${((sum/cnt)-pt>=0?'+':'')}${((sum/cnt)-pt).toFixed(2)} vs par · ${cnt} holes`:'no data yet'})}
  $('histBest').textContent=sc.length?Math.min(...sc):'—';
  $('histAvg').textContent=sc.length?(sc.reduce((t,v)=>t+v,0)/sc.length).toFixed(1).replace(/\.0$/,''):'—';
- const ul=$('histList');ul.innerHTML='';list.forEach(r=>{const li=document.createElement('li'),sc=roundScore(r);const a=document.createElement('span'),b=document.createElement('span');a.textContent=roundTitle(r);b.textContent=sc===null?'no score':sc;li.append(a,b);ul.append(li)})}
+ const ul=$('histList');ul.innerHTML='';list.forEach(r=>{const li=document.createElement('li'),sc=roundScore(r);const a=document.createElement('span'),b=document.createElement('span');a.textContent=roundTitle(r);{const x=roundToPar(r);b.textContent=sc===null?'no score':sc+(x!==null?` (${fmtPar(x)})`:'')};li.append(a,b);ul.append(li)})}
 // ---- Trend lines (History): one small line per stat, oldest round on the left, better results higher up
 const dmy=d=>d&&d.length>=10?d.slice(8,10)+'/'+d.slice(5,7):'';
 function trendSVG(m,pts){const W=320,H=130,L=10,R=48,T=18,B=22,n=pts.length;
@@ -246,7 +268,7 @@ function normaliseRound(x){const b=blank(),r={...b,...x};r.id=typeof x.id==='str
  ['course','date','name','notes'].forEach(k=>{r[k]=typeof r[k]==='string'?r[k]:''});
  ['tee','approaches','chips','inside','outside','scores'].forEach(k=>{const a=Array.isArray(x[k])?x[k]:b[k];r[k]=Array.from({length:18},(_,i)=>a[i]===undefined?b[k][i]:a[i])});
  if(r.v!==2){['tee','chips','inside'].forEach(k=>{r[k]=r[k].map(v=>v===true?true:null)});r.v=2}
- r.outside=r.outside.map(v=>v===true?1:(v===false||v==null)?'':v);return r}
+ r.outside=r.outside.map(v=>v===true?1:(v===false||v==null)?'':v);r.pars=Array.from({length:18},(_,i)=>{const v=Array.isArray(x.pars)?x.pars[i]:null;return v===3||v===4||v===5?v:null});return r}
 async function doRestore(file){
  try{const j=JSON.parse(await file.text());
   const list=Array.isArray(j)?j:j&&Array.isArray(j.rounds)?j.rounds:j&&typeof j==='object'&&Array.isArray(j.tee)?[j]:null;
@@ -257,25 +279,41 @@ async function doRestore(file){
    if(!rounds.includes(current)){current=rounds[0]}
    // a blank round left over from a fresh install is dropped once real rounds are restored
    if(rounds.length>1&&!hasData(current)&&!current.course&&!current.name&&!current.notes){rounds=rounds.filter(r=>r!==current);current=rounds[0]}
-   persist();loadCurrent();renderHistory()}
+   persist();seedLib();loadCurrent();renderHistory()}
   refreshBackupUI();bmsg(`Restore complete: ${added} round${added===1?'':'s'} added, ${skipped} already on this device.`)}
  catch(e){bmsg('That file could not be read as a Play Ready Golf backup. Nothing was changed.')}}
 $('backupBtn').onclick=doBackup;$('backupBanner').onclick=()=>{showView('hist');doBackup()};
 $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)doRestore(f)};
-function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
+// ---- Course setup (par per hole), remembered per course name
+const COURSE_KEY='playReadyGolfCoursesV1';
+const loadLib=()=>{try{return JSON.parse(getLS(COURSE_KEY)||'{}')||{}}catch(e){return {}}};
+const courseKey=n=>(n||'').trim().toLowerCase();
+const hasPars=r=>(r.pars||[]).some(v=>v);
+function saveCoursePars(){const k=courseKey(current.course);if(!k||!hasPars(current))return;const lib=loadLib();lib[k]=current.pars.slice();setLS(COURSE_KEY,JSON.stringify(lib))}
+function applyCoursePars(){const k=courseKey($('course').value),lib=loadLib();if(k&&lib[k]&&!hasPars(current)){current.pars=lib[k].slice();current.course=$('course').value;renderPars();renderToggles();persist();updateSummary();$('saveStatus').textContent='Pars filled in from your saved course ✓'}}
+function seedLib(){const lib=loadLib();let ch=false;rounds.forEach(r=>{const k=courseKey(r.course);if(k&&hasPars(r)&&!lib[k]){lib[k]=r.pars.slice();ch=true}});if(ch)setLS(COURSE_KEY,JSON.stringify(lib))}
+const totalPar=r=>{const p=r.pars||[];return p.length===18&&p.every(v=>v)?p.reduce((n,v)=>n+v,0):null};
+const fmtPar=n=>n===0?'E':(n>0?'+':'')+n;
+function roundToPar(r){const sc=roundScore(r),tp=totalPar(r);return sc!==null&&tp!==null?sc-tp:null}
+function makePars(){const root=$('parHoles');root.innerHTML='';for(let i=0;i<18;i++){const b=document.createElement('button');b.type='button';b.className='hole par';b.innerHTML=`<span>${i+1}</span><small></small>`;
+ b.onclick=()=>{const v=current.pars[i];current.pars[i]=v==null?4:v===4?5:v===5?3:null;saveCoursePars();renderPars();renderToggles();updateRound()};root.append(b)}}
+function renderPars(){[...$('parHoles').children].forEach((b,i)=>{const v=current.pars[i];b.classList.toggle('set',!!v);b.querySelector('small').textContent=v?'Par '+v:'Tap'});
+ const n=current.pars.filter(Boolean).length,tp=totalPar(current);$('parProg').textContent=tp!==null?'Par '+tp:n?`${n} of 18 set`:'not set'}
+function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderPars();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
 ['course','roundDate','roundName','notes'].forEach(id=>$(id).addEventListener('input',updateRound));
+$('course').addEventListener('input',applyCoursePars);
 $('newRound').onclick=()=>{updateRound();current=blank();rounds.unshift(current);persist();loadCurrent();window.scrollTo({top:0,behavior:'smooth'})};
 $('deleteRound').onclick=()=>{updateRound();if(!confirm(`Delete "${roundTitle(current)}"?\n\nThis cannot be undone unless you have a backup.`))return;rounds=rounds.filter(r=>r!==current);if(!rounds.length){rounds.push(blank())}current=rounds[0];persist();loadCurrent();refreshBackupUI();renderHistory();$('saveStatus').textContent='Round deleted'};
 $('saveRound').onclick=()=>{updateRound();$('saveStatus').textContent='Round saved ✓'};
 $('export').onclick=()=>{updateRound();download(JSON.stringify(current,null,2),`${safeName(current)}.json`,'application/json')};
-$('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Tee in play',current.tee),['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Chip within 20 ft',current.chips),...csvStat('Putt inside 8 ft',current.inside),['Outside 30 ft total',current.outside.reduce((n,v)=>n+(Number(v)||0),0)],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],yn(current.tee[i]),yn(current.chips[i]),yn(current.inside[i]),current.outside[i]]);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
+$('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],['Total par',totalPar(current)??''],['Score vs par',(()=>{const x=roundToPar(current);return x===null?'':fmtPar(x)})()],...csvStat('Tee in play',teeArr(current)),['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Chip within 20 ft',current.chips),...csvStat('Putt inside 8 ft',current.inside),['Outside 30 ft total',current.outside.reduce((n,v)=>n+(Number(v)||0),0)],['Notes',current.notes],[],['Hole','Par','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.pars[i]??'',current.scores[i],current.approaches[i],yn(teeArr(current)[i]),yn(current.chips[i]),yn(current.inside[i]),current.outside[i]]);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
 function yn(v){return v===true?'Yes':v===false?'No':''}
 function csvStat(label,a){const y=a.filter(v=>v===true).length,t=y+a.filter(v=>v===false).length;return [[label+' - Yes',y],[label+' - recorded',t],[label+' - %',t?Math.round(y/t*1000)/10:'']]}
 function safeName(r){return ((r.name||r.course||'golf-round')+(r.date?' '+r.date:'')).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
 function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildMetrics('analysisList','r');buildMetrics('histAnalysis','h');loadCurrent();refreshBackupUI();
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildMetrics('analysisList','r');buildMetrics('histAnalysis','h');makePars();seedLib();loadCurrent();refreshBackupUI();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
