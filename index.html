@@ -17,7 +17,9 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .panel-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.panel-head .num{background:var(--mint);color:var(--teal);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:900}.panel-head h2{font-size:1.08rem;margin:0}.panel-head p{margin:2px 0 0;color:var(--muted);font-size:.82rem}.count{margin-left:auto;color:var(--teal);font-size:1.2rem;font-weight:850;white-space:nowrap}
 .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.field input,.field select,.hole-score input,textarea{width:100%;border:1px solid #c7d3d4;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.field input:focus,.hole-score input:focus,textarea:focus{outline:2px solid #80b8b4;border-color:var(--teal)}
 .holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole.no{background:#fbe4e5;border-color:var(--pink);color:#8a2f36}.hole.no small{color:#8a2f36}
-.analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
+.analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
+.rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
 .summary{background:var(--navy);color:white;border-radius:17px;padding:15px;margin:12px 0}.summary h2{margin:0 0 4px}.summary p{color:#c6d9dc;margin:0 0 12px;font-size:.85rem}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{border:1px solid #49616a;border-radius:12px;padding:12px}.stat span{display:block;color:#c6d9dc;font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em}.stat strong{display:block;font-size:1.65rem;margin-top:4px}
@@ -28,7 +30,9 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 </head>
 <body>
 <header><div class="eyebrow">PLAY READY GOLF</div><h1>SIMPLE STAT TRACKER</h1><p>Your round, your stats — saved on this device</p></header>
+<div class="tabs"><button type="button" class="tab on" id="tabRound">Current round</button><button type="button" class="tab" id="tabHist">History</button></div>
 <main>
+<div id="viewRound">
 <section class="panel">
  <div class="panel-head"><div class="num">⛳</div><div><h2>Round details</h2><p>Give each round a name so you can find it later.</p></div></div>
  <div class="meta">
@@ -89,6 +93,26 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <p class="save-note">Benchmarks are typical results for a 20 handicap, a 10 handicap and a scratch golfer. Results are scaled to the holes you recorded, so holes left blank don't count. The 2-putt rate counts holes where you entered 2 putts or fewer under "Outside 30 feet".</p>
 </section>
 <p class="save-note">Home-screen app preview. For reliable home-screen installation, publish these files to an HTTPS website. Browser storage can be cleared by device/browser settings, so export backups regularly.</p>
+</div>
+<div id="viewHistory" class="hidden">
+ <section class="panel">
+  <div class="panel-head"><div class="num">📈</div><div><h2>Round history</h2><p>Averages across your most recent rounds.</p></div></div>
+  <div class="field"><label for="histN">Show</label><select id="histN"><option value="3">Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
+  <p class="save-note" id="histInfo"></p>
+ </section>
+ <section class="summary">
+  <h2>Scores</h2><p>Total score for rounds where all 18 holes were entered in "Hole-by-hole total score".</p>
+  <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+   <div class="stat"><span>Best score</span><strong id="histBest">—</strong></div>
+   <div class="stat"><span>Average score</span><strong id="histAvg">—</strong></div>
+  </div>
+  <ul class="rlist" id="histList"></ul>
+ </section>
+ <section class="summary" style="background:white;color:var(--ink);border:1px solid var(--line)">
+  <h2>Average analysis</h2><p style="color:var(--muted)">Each stat is the average of the per-round results, compared with typical handicap levels.</p>
+  <div id="histAnalysis"></div>
+ </section>
+</div>
 </main>
 <script>
 const KEY='playReadyGolfRoundsV1';
@@ -130,20 +154,38 @@ const METRICS=[
  {id:'in8',title:'Make rate inside 8 feet',goodHigh:true,lo:40,hi:90,b:[58,68,77],fmt:pct,endL:'40%',endR:'90%',empty:'Record putts inside 8 feet to see your result.',
   calc:r=>{const{y,t}=cnt(r.inside);return t?{v:y/t*100,detail:`${y} of ${t} putts made`}:null}}
 ];
-function buildAnalysis(){const root=$('analysisList');root.innerHTML='';
+function buildMetrics(rootId,pre){const root=$(rootId);root.innerHTML='';
  const stops=[];for(let p=50;p<=100;p+=5)stops.push(`hsl(${hueFor(p).toFixed(0)},70%,36%) ${(p-50)*2}%`);const grad=`linear-gradient(to right,${stops.join(',')})`;
  METRICS.forEach(m=>{const pos=v=>Math.max(0,Math.min(100,(m.goodHigh?v-m.lo:m.hi-v)/(m.hi-m.lo)*100));
   const d=document.createElement('div');d.className='metric';
-  d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${m.id}Box"><strong id="${m.id}Big">—</strong><small id="${m.id}Detail"></small><em id="${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>`;
+  d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${pre}${m.id}Box"><strong id="${pre}${m.id}Big">—</strong><small id="${pre}${m.id}Detail"></small><em id="${pre}${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${pre}${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>`;
   root.append(d)})}
-function updateAnalysis(){METRICS.forEach(m=>{const box=$(m.id+'Box'),ptr=$(m.id+'Ptr'),r=m.calc(current);
- if(!r){ptr.style.display='none';box.style.background='';box.style.color='';$(m.id+'Big').textContent='—';$(m.id+'Detail').textContent='';$(m.id+'Label').textContent=m.empty;return}
+function updateMetrics(pre,resultFn){METRICS.forEach(m=>{const box=$(pre+m.id+'Box'),ptr=$(pre+m.id+'Ptr'),r=resultFn(m);
+ if(!r){ptr.style.display='none';box.style.background='';box.style.color='';$(pre+m.id+'Big').textContent='—';$(pre+m.id+'Detail').textContent='';$(pre+m.id+'Label').textContent=m.empty;return}
  const s=m.goodHigh?1:-1,x=s*r.v,[a,b,c]=m.b.map(v=>s*v);
  const q=Math.max(0,Math.min(1,(m.goodHigh?r.v-m.lo:m.hi-r.v)/(m.hi-m.lo)));
  ptr.style.display='block';ptr.style.left=q*100+'%';
  box.style.background=colorFor(q);box.style.color='#fff';
- $(m.id+'Big').textContent=m.fmt(r.v);$(m.id+'Detail').textContent=r.detail;
- $(m.id+'Label').textContent=x<a-(b-a)/2?'Below the typical 20 handicap':x<(a+b)/2?'In line with a 20 handicap':x<(b+c)/2?'In line with a 10 handicap':'Scratch-golfer level'})}
+ $(pre+m.id+'Big').textContent=m.fmt(r.v);$(pre+m.id+'Detail').textContent=r.detail;
+ $(pre+m.id+'Label').textContent=x<a-(b-a)/2?'Below the typical 20 handicap':x<(a+b)/2?'In line with a 20 handicap':x<(b+c)/2?'In line with a 10 handicap':'Scratch-golfer level'})}
+function updateAnalysis(){updateMetrics('r',m=>m.calc(current))}
+
+// ---- History
+const hasData=r=>[r.tee,r.chips,r.inside].some(a=>(a||[]).some(v=>v===true||v===false))||filled(r.approaches||[]).length>0||filled(r.outside||[]).length>0||filled(r.scores||[]).length>0;
+const roundScore=r=>{const a=filled(r.scores||[]);return a.length===18?a.reduce((n,v)=>n+v,0):null};
+const roundTitle=r=>(r.name||r.course||'Untitled round')+(r.date?' · '+r.date:'');
+function historyRounds(){const n=Number($('histN').value)||3;
+ // newest first by date; rounds without a date keep their saved order (newest first) after dated ones
+ return rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).slice(0,n).map(x=>x.r)}
+function renderHistory(){const list=historyRounds(),n=Number($('histN').value)||3;
+ $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''}${list.length<n?` (you have saved ${list.length} with data so far)`:''}.`:'No rounds with data yet. Record a round first.';
+ updateMetrics('h',m=>{const vals=list.map(r=>m.calc(r)).filter(Boolean);if(!vals.length)return null;return{v:vals.reduce((t,x)=>t+x.v,0)/vals.length,detail:`Average of ${vals.length} round${vals.length>1?'s':''}`}});
+ const sc=list.map(roundScore).filter(v=>v!==null);
+ $('histBest').textContent=sc.length?Math.min(...sc):'—';
+ $('histAvg').textContent=sc.length?(sc.reduce((t,v)=>t+v,0)/sc.length).toFixed(1).replace(/\.0$/,''):'—';
+ const ul=$('histList');ul.innerHTML='';list.forEach(r=>{const li=document.createElement('li'),sc=roundScore(r);const a=document.createElement('span'),b=document.createElement('span');a.textContent=roundTitle(r);b.textContent=sc===null?'no score':sc;li.append(a,b);ul.append(li)})}
+function showView(v){$('viewRound').classList.toggle('hidden',v!=='round');$('viewHistory').classList.toggle('hidden',v!=='hist');$('tabRound').classList.toggle('on',v==='round');$('tabHist').classList.toggle('on',v==='hist');if(v==='hist')renderHistory();window.scrollTo({top:0})}
+$('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('histN').onchange=renderHistory;
 function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
@@ -156,7 +198,7 @@ function yn(v){return v===true?'Yes':v===false?'No':''}
 function csvStat(label,a){const y=a.filter(v=>v===true).length,t=y+a.filter(v=>v===false).length;return [[label+' - Yes',y],[label+' - recorded',t],[label+' - %',t?Math.round(y/t*1000)/10:'']]}
 function safeName(r){return (r.name||r.course||'golf-round').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
 function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildAnalysis();loadCurrent();
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildMetrics('analysisList','r');buildMetrics('histAnalysis','h');loadCurrent();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
