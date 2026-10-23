@@ -19,6 +19,7 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole.no{background:#fbe4e5;border-color:var(--pink);color:#8a2f36}.hole.no small{color:#8a2f36}
 .analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
+.banner{max-width:760px;margin:10px auto 0;padding:0 12px}.banner button{width:100%;text-align:left;background:#fff3e0;border:1px solid #f0b36a;color:#7a4300;border-radius:11px;padding:10px 12px;font:600 .88rem system-ui;cursor:pointer}.bmsg{font-size:.85rem;min-height:1.2em;margin:10px 2px 0;color:var(--teal);font-weight:600}
 .rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
@@ -31,6 +32,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 <body>
 <header><div class="eyebrow">PLAY READY GOLF</div><h1>SIMPLE STAT TRACKER</h1><p>Your round, your stats — saved on this device</p></header>
 <div class="tabs"><button type="button" class="tab on" id="tabRound">Current round</button><button type="button" class="tab" id="tabHist">History</button></div>
+<div class="banner hidden" id="bannerWrap"><button type="button" id="backupBanner"></button></div>
 <main>
 <div id="viewRound">
 <section class="panel">
@@ -112,6 +114,14 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
   <h2>Average analysis</h2><p style="color:var(--muted)">Each stat is the average of the per-round results, compared with typical handicap levels.</p>
   <div id="histAnalysis"></div>
  </section>
+ <section class="panel">
+  <div class="panel-head"><div class="num">💾</div><div><h2>Backup &amp; restore</h2><p>Keep a safe copy of all your rounds outside this phone.</p></div></div>
+  <p class="save-note" id="backupStatus" style="margin-top:0"></p>
+  <div class="actions"><button class="action" id="backupBtn" type="button">Back up all rounds</button><button class="action secondary" id="restoreBtn" type="button">Restore from backup</button></div>
+  <input type="file" id="restoreFile" accept=".json,application/json" class="hidden">
+  <div class="bmsg" id="backupMsg" role="status"></div>
+  <p class="save-note">Tip: when the share sheet opens, choose "Save to Files" and pick iCloud Drive so the copy is stored off the phone. Restoring adds back any rounds that are missing and never overwrites rounds already on this device.</p>
+ </section>
 </div>
 </main>
 <script>
@@ -127,7 +137,7 @@ function persist(){localStorage.setItem(KEY,JSON.stringify(rounds));}
 function ensure(){if(!rounds.length){current=blank();rounds.push(current);persist()}else current=rounds[0]}
 ensure();
 const $=id=>document.getElementById(id);
-function updateRound(){if(!current)return;current.course=$('course').value;current.date=$('roundDate').value;current.name=$('roundName').value;current.notes=$('notes').value;persist();renderSelect();updateSummary();$('saveStatus').textContent='Saved on this device';}
+function updateRound(){if(!current)return;current.course=$('course').value;current.date=$('roundDate').value;current.name=$('roundName').value;current.notes=$('notes').value;persist();renderSelect();updateSummary();refreshBackupUI();$('saveStatus').textContent='Saved on this device';}
 function renderSelect(){let sel=$('roundSelect'),old=current?.id;sel.innerHTML='';rounds.forEach(r=>{let o=document.createElement('option');o.value=r.id;o.textContent=(r.name||r.course||'Untitled round')+' · '+(r.date||'No date');sel.append(o)});if(old)sel.value=old}
 function makeHoles(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let b=document.createElement('button');b.type='button';b.className='hole';b.innerHTML=`<span>${i+1}</span><small></small>`;b.onclick=()=>{const v=current[key][i];current[key][i]=v===true?false:v===false?null:true;renderToggles();updateRound()};root.append(b)}}
 function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles','inside']].forEach(([id,key])=>{[...$(id).children].forEach((b,i)=>{const v=current[key][i];b.classList.toggle('active',v===true);b.classList.toggle('no',v===false);b.querySelector('small').textContent=v===true?'Yes':v===false?'No':'Tap'})});$('teeCount').textContent=ratio(current.tee);$('chipCount').textContent=ratio(current.chips);$('insideCount').textContent=ratio(current.inside)}
@@ -186,6 +196,44 @@ function renderHistory(){const list=historyRounds(),n=Number($('histN').value)||
  const ul=$('histList');ul.innerHTML='';list.forEach(r=>{const li=document.createElement('li'),sc=roundScore(r);const a=document.createElement('span'),b=document.createElement('span');a.textContent=roundTitle(r);b.textContent=sc===null?'no score':sc;li.append(a,b);ul.append(li)})}
 function showView(v){$('viewRound').classList.toggle('hidden',v!=='round');$('viewHistory').classList.toggle('hidden',v!=='hist');$('tabRound').classList.toggle('on',v==='round');$('tabHist').classList.toggle('on',v==='hist');if(v==='hist')renderHistory();window.scrollTo({top:0})}
 $('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('histN').onchange=renderHistory;
+// ---- Backup & restore
+const BK_KEY='playReadyGolfLastBackup';
+const getLS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const setLS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const localDate=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+function backupAge(){const t=Date.parse(getLS(BK_KEY)||'');return isNaN(t)?null:Math.floor((Date.now()-t)/864e5)}
+const ageText=d=>d===0?'today':d===1?'yesterday':d+' days ago';
+function refreshBackupUI(){const d=backupAge(),any=rounds.some(hasData);
+ $('backupStatus').textContent=d===null?'Last backup: never.':'Last backup: '+ageText(d)+'.';
+ const due=any&&(d===null||d>14);$('bannerWrap').classList.toggle('hidden',!due);
+ $('backupBanner').textContent=d===null?'⚠ You have not backed up your rounds yet. Tap to back up now.':'⚠ Last backup: '+ageText(d)+'. Tap to back up now.'}
+const bmsg=t=>{$('backupMsg').textContent=t};
+async function doBackup(){updateRound();
+ const text=JSON.stringify({app:'playReadyGolf',version:1,exported:new Date().toISOString(),rounds},null,2),name=`golf-backup-${localDate()}.json`;
+ try{const file=new File([text],name,{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});setLS(BK_KEY,new Date().toISOString());refreshBackupUI();bmsg('Backup shared ✓ Check it was saved to Files.');return}
+ }catch(e){if(e&&e.name==='AbortError'){bmsg('Backup cancelled, nothing was saved.');return}}
+ download(text,name,'application/json');setLS(BK_KEY,new Date().toISOString());refreshBackupUI();bmsg('Backup file downloaded ✓ Look for '+name)}
+function normaliseRound(x){const b=blank(),r={...b,...x};r.id=typeof x.id==='string'&&x.id?x.id:b.id;
+ ['course','date','name','notes'].forEach(k=>{r[k]=typeof r[k]==='string'?r[k]:''});
+ ['tee','approaches','chips','inside','outside','scores'].forEach(k=>{const a=Array.isArray(x[k])?x[k]:b[k];r[k]=Array.from({length:18},(_,i)=>a[i]===undefined?b[k][i]:a[i])});
+ if(r.v!==2){['tee','chips','inside'].forEach(k=>{r[k]=r[k].map(v=>v===true?true:null)});r.v=2}
+ r.outside=r.outside.map(v=>v===true?1:(v===false||v==null)?'':v);return r}
+async function doRestore(file){
+ try{const j=JSON.parse(await file.text());
+  const list=Array.isArray(j)?j:j&&Array.isArray(j.rounds)?j.rounds:j&&typeof j==='object'&&Array.isArray(j.tee)?[j]:null;
+  if(!list||!list.length)throw new Error('empty');
+  const have=new Set(rounds.map(r=>r.id));let added=0,skipped=0;
+  list.forEach(x=>{if(!x||typeof x!=='object'){return}const r=normaliseRound(x);if(have.has(r.id)){skipped++;return}have.add(r.id);rounds.push(r);added++});
+  if(added){const keep=r=>r===current||hasData(r)||r.course||r.name||r.notes;rounds=rounds.filter(keep);
+   if(!rounds.includes(current)){current=rounds[0]}
+   // a blank round left over from a fresh install is dropped once real rounds are restored
+   if(rounds.length>1&&!hasData(current)&&!current.course&&!current.name&&!current.notes){rounds=rounds.filter(r=>r!==current);current=rounds[0]}
+   persist();loadCurrent();renderHistory()}
+  refreshBackupUI();bmsg(`Restore complete: ${added} round${added===1?'':'s'} added, ${skipped} already on this device.`)}
+ catch(e){bmsg('That file could not be read as a Play Ready Golf backup. Nothing was changed.')}}
+$('backupBtn').onclick=doBackup;$('backupBanner').onclick=()=>{showView('hist');doBackup()};
+$('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)doRestore(f)};
 function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
@@ -196,9 +244,9 @@ $('export').onclick=()=>{updateRound();download(JSON.stringify(current,null,2),`
 $('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Tee in play',current.tee),['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Chip within 20 ft',current.chips),...csvStat('Putt inside 8 ft',current.inside),['Outside 30 ft total',current.outside.reduce((n,v)=>n+(Number(v)||0),0)],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],yn(current.tee[i]),yn(current.chips[i]),yn(current.inside[i]),current.outside[i]]);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
 function yn(v){return v===true?'Yes':v===false?'No':''}
 function csvStat(label,a){const y=a.filter(v=>v===true).length,t=y+a.filter(v=>v===false).length;return [[label+' - Yes',y],[label+' - recorded',t],[label+' - %',t?Math.round(y/t*1000)/10:'']]}
-function safeName(r){return (r.name||r.course||'golf-round').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
+function safeName(r){return ((r.name||r.course||'golf-round')+(r.date?' '+r.date:'')).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'golf-round'}
 function download(content,name,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildMetrics('analysisList','r');buildMetrics('histAnalysis','h');loadCurrent();
+makeHoles('teeHoles','tee');makeHoles('chipHoles','chips');makeHoles('insideHoles','inside');buildMetrics('analysisList','r');buildMetrics('histAnalysis','h');loadCurrent();refreshBackupUI();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
