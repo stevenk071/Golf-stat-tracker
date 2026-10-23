@@ -20,6 +20,7 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
 .banner{max-width:760px;margin:10px auto 0;padding:0 12px}.banner button{width:100%;text-align:left;background:#fff3e0;border:1px solid #f0b36a;color:#7a4300;border-radius:11px;padding:10px 12px;font:600 .88rem system-ui;cursor:pointer}.bmsg{font-size:.85rem;min-height:1.2em;margin:10px 2px 0;color:var(--teal);font-weight:600}
+.action.danger{background:#fbe4e5;color:#8a2f36;grid-column:1/-1}.stat small{display:block;font-size:.72rem;color:#c6d9dc;margin-top:3px}.prog{font-weight:600;font-size:.8rem;color:var(--muted);margin-left:6px}.prog.ok{color:var(--teal)}.focus{background:#e8f3f1;border-left:4px solid var(--teal);border-radius:10px;padding:11px 13px;margin:0 0 6px;font-size:.9rem}.focus b{color:var(--teal)}
 .rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
@@ -43,7 +44,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
   <div class="field"><label for="roundSelect">Saved rounds</label><select id="roundSelect"></select></div>
   <div class="field"><label for="roundName">Round label</label><input id="roundName" placeholder="e.g. Saturday round"></div>
  </div>
- <div class="actions"><button class="action" id="newRound">＋ New round</button><button class="action secondary" id="saveRound">Save round</button></div>
+ <div class="actions"><button class="action" id="newRound">＋ New round</button><button class="action secondary" id="saveRound">Save round</button><button class="action danger" id="deleteRound" type="button">Delete this round</button></div>
  <div class="status" id="saveStatus" role="status" style="color:var(--teal)"></div>
 </section>
 
@@ -67,7 +68,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 </section>
 <section class="panel">
  <details>
-  <summary>Hole-by-hole total score</summary>
+  <summary>Hole-by-hole total score <span class="prog" id="scoreProg"></span></summary>
   <p style="font-size:.82rem;color:var(--muted)">Enter your total strokes for each hole. The score total updates automatically.</p>
   <div class="scoregrid" id="scoreInputs"></div>
  </details>
@@ -79,7 +80,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 <section class="summary">
  <h2>Round summary</h2><p>Live totals, saved automatically on this device.</p>
  <div class="stats">
-  <div class="stat"><span>Total score</span><strong id="totalScore">—</strong></div>
+  <div class="stat"><span>Total score</span><strong id="totalScore">—</strong><small id="scoreNote"></small></div>
   <div class="stat"><span>Tee shots in play</span><strong id="sumTee">0</strong></div>
   <div class="stat"><span>Approach strokes</span><strong id="sumApproach">0</strong></div>
   <div class="stat"><span>Chips within 20 ft</span><strong id="sumChips">0</strong></div>
@@ -144,7 +145,7 @@ function renderToggles(){[['teeHoles','tee'],['chipHoles','chips'],['insideHoles
 function ratio(a){const y=a.filter(v=>v===true).length;return y+'/'+(y+a.filter(v=>v===false).length)}
 function makeInputs(id,key){const root=$(id);root.innerHTML='';for(let i=0;i<18;i++){let wrap=document.createElement('div');wrap.className='hole-score';let label=document.createElement('label');label.textContent='Hole '+(i+1);let input=document.createElement('input');input.type='number';input.min='0';input.max='99';input.inputMode='numeric';input.placeholder='—';input.value=current[key][i];input.setAttribute('aria-label',`Hole ${i+1} ${key}`);input.oninput=()=>{current[key][i]=input.value;updateRound()};wrap.append(label,input);root.append(wrap)}}
 function renderInputs(){makeInputs('approachInputs','approaches');makeInputs('outsideInputs','outside');makeInputs('scoreInputs','scores')}
-function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside);updateAnalysis()}
+function updateSummary(){let sum=a=>a.reduce((n,v)=>n+(Number(v)||0),0),count=ratio;let score=sum(current.scores);$('totalScore').textContent=score||'—';{const n=filled(current.scores).length,done=n===18;$('scoreProg').textContent=done?'✓ 18 of 18 holes entered':n?`${n} of 18 holes entered`:'not entered yet';$('scoreProg').classList.toggle('ok',done);$('scoreNote').textContent=done?'All 18 holes entered ✓':n?`Incomplete: ${n} of 18 holes entered`:'Enter scores under Hole-by-hole total score'}$('sumTee').textContent=count(current.tee);$('sumApproach').textContent=sum(current.approaches);$('sumChips').textContent=count(current.chips);$('sumInside').textContent=count(current.inside);$('sumOutside').textContent=sum(current.outside);$('approachTotal').textContent=sum(current.approaches);$('outsideCount').textContent=sum(current.outside);updateAnalysis()}
 // Colour: 0 (worst) = red, about 0.4 = orange, 1 (best) = green
 function hueFor(p){return p<=50?0:p<=70?(p-50)/20*35:Math.min(125,35+(p-70)/20*90)}
 const colorFor=q=>`hsl(${hueFor(50+Math.max(0,Math.min(1,q))*50).toFixed(0)},70%,36%)`;
@@ -164,20 +165,26 @@ const METRICS=[
  {id:'in8',title:'Make rate inside 8 feet',goodHigh:true,lo:40,hi:90,b:[58,68,77],fmt:pct,endL:'40%',endR:'90%',empty:'Record putts inside 8 feet to see your result.',
   calc:r=>{const{y,t}=cnt(r.inside);return t?{v:y/t*100,detail:`${y} of ${t} putts made`}:null}}
 ];
-function buildMetrics(rootId,pre){const root=$(rootId);root.innerHTML='';
+function buildMetrics(rootId,pre){const root=$(rootId);root.innerHTML='';const fd=document.createElement('div');fd.className='focus hidden';fd.id=pre+'Focus';root.append(fd);
  const stops=[];for(let p=50;p<=100;p+=5)stops.push(`hsl(${hueFor(p).toFixed(0)},70%,36%) ${(p-50)*2}%`);const grad=`linear-gradient(to right,${stops.join(',')})`;
  METRICS.forEach(m=>{const pos=v=>Math.max(0,Math.min(100,(m.goodHigh?v-m.lo:m.hi-v)/(m.hi-m.lo)*100));
   const d=document.createElement('div');d.className='metric';
   d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${pre}${m.id}Box"><strong id="${pre}${m.id}Big">—</strong><small id="${pre}${m.id}Detail"></small><em id="${pre}${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${pre}${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>`;
   root.append(d)})}
-function updateMetrics(pre,resultFn){METRICS.forEach(m=>{const box=$(pre+m.id+'Box'),ptr=$(pre+m.id+'Ptr'),r=resultFn(m);
+function updateMetrics(pre,resultFn){const res={};METRICS.forEach(m=>{const box=$(pre+m.id+'Box'),ptr=$(pre+m.id+'Ptr'),r=resultFn(m);
  if(!r){ptr.style.display='none';box.style.background='';box.style.color='';$(pre+m.id+'Big').textContent='—';$(pre+m.id+'Detail').textContent='';$(pre+m.id+'Label').textContent=m.empty;return}
- const s=m.goodHigh?1:-1,x=s*r.v,[a,b,c]=m.b.map(v=>s*v);
+ res[m.id]=r;const s=m.goodHigh?1:-1,x=s*r.v,[a,b,c]=m.b.map(v=>s*v);
  const q=Math.max(0,Math.min(1,(m.goodHigh?r.v-m.lo:m.hi-r.v)/(m.hi-m.lo)));
  ptr.style.display='block';ptr.style.left=q*100+'%';
  box.style.background=colorFor(q);box.style.color='#fff';
  $(pre+m.id+'Big').textContent=m.fmt(r.v);$(pre+m.id+'Detail').textContent=r.detail;
- $(pre+m.id+'Label').textContent=x<a-(b-a)/2?'Below the typical 20 handicap':x<(a+b)/2?'In line with a 20 handicap':x<(b+c)/2?'In line with a 10 handicap':'Scratch-golfer level'})}
+ $(pre+m.id+'Label').textContent=x<a-(b-a)/2?'Below the typical 20 handicap':x<(a+b)/2?'In line with a 20 handicap':x<(b+c)/2?'In line with a 10 handicap':'Scratch-golfer level'});setFocus(pre,res)}
+const SHORT={tee:'Fairways hit',app:'Strokes from 150 yards in',chip:'Chips within 20 feet',two:'2-putt rate from 30+ feet',in8:'Make rate inside 8 feet'};
+// Focus area: compared with a 10 handicap, measured in "20-to-10 handicap steps" so different units are comparable
+function setFocus(pre,res){const el=$(pre+'Focus');const rows=METRICS.filter(m=>res[m.id]).map(m=>{const s=m.goodHigh?1:-1;return{m,v:res[m.id].v,gap:s*(res[m.id].v-m.b[1])/Math.abs(m.b[0]-m.b[1])}});
+ if(!rows.length){el.classList.add('hidden');return}
+ rows.sort((x,y)=>x.gap-y.gap);const w=rows[0];el.classList.remove('hidden');
+ el.innerHTML=w.gap<0?`<b>Focus area:</b> ${SHORT[w.m.id]} is your biggest gap to a 10 handicap (${w.m.fmt(w.v)} vs ${w.m.fmt(w.m.b[1])}).`:`<b>Focus area:</b> you're at or better than a 10 handicap in every stat recorded. Closest to the line: ${SHORT[w.m.id]} (${w.m.fmt(w.v)} vs ${w.m.fmt(w.m.b[1])}).`}
 function updateAnalysis(){updateMetrics('r',m=>m.calc(current))}
 
 // ---- History
@@ -239,6 +246,7 @@ function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCur
 $('roundSelect').onchange=e=>selectRound(e.target.value);
 ['course','roundDate','roundName','notes'].forEach(id=>$(id).addEventListener('input',updateRound));
 $('newRound').onclick=()=>{updateRound();current=blank();rounds.unshift(current);persist();loadCurrent();window.scrollTo({top:0,behavior:'smooth'})};
+$('deleteRound').onclick=()=>{updateRound();if(!confirm(`Delete "${roundTitle(current)}"?\n\nThis cannot be undone unless you have a backup.`))return;rounds=rounds.filter(r=>r!==current);if(!rounds.length){rounds.push(blank())}current=rounds[0];persist();loadCurrent();refreshBackupUI();renderHistory();$('saveStatus').textContent='Round deleted'};
 $('saveRound').onclick=()=>{updateRound();$('saveStatus').textContent='Round saved ✓'};
 $('export').onclick=()=>{updateRound();download(JSON.stringify(current,null,2),`${safeName(current)}.json`,'application/json')};
 $('csv').onclick=()=>{updateRound();let rows=[['Course',current.course],['Date',current.date],['Round',current.name],['Total score',current.scores.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Tee in play',current.tee),['Approach strokes',current.approaches.reduce((n,v)=>n+(Number(v)||0),0)],...csvStat('Chip within 20 ft',current.chips),...csvStat('Putt inside 8 ft',current.inside),['Outside 30 ft total',current.outside.reduce((n,v)=>n+(Number(v)||0),0)],['Notes',current.notes],[],['Hole','Score','Approach strokes','Tee in play','Chip within 20 ft','Putt inside 8 ft','Outside 30 ft']];for(let i=0;i<18;i++)rows.push([i+1,current.scores[i],current.approaches[i],yn(current.tee[i]),yn(current.chips[i]),yn(current.inside[i]),current.outside[i]]);download(rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n'),`${safeName(current)}.csv`,'text/csv')};
