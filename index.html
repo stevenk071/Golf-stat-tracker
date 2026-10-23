@@ -18,11 +18,14 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.field input,.field select,.hole-score input,textarea{width:100%;border:1px solid #c7d3d4;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit;min-width:0}.field input:focus,.hole-score input:focus,textarea:focus{outline:2px solid #80b8b4;border-color:var(--teal)}
 .holes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.hole{border:1px solid #c7d3d4;border-radius:10px;background:#f6f8f7;min-height:53px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font:inherit;cursor:pointer}.hole small{font-size:.68rem;color:var(--muted)}.hole.active{background:var(--teal);border-color:var(--teal);color:white}.hole.active small{color:#e0f2f0}.hole.no{background:#fbe4e5;border-color:var(--pink);color:#8a2f36}.hole.no small{color:#8a2f36}
 .analysis{border-radius:14px;padding:18px 14px;text-align:center;background:#e8eeee;color:var(--ink);transition:background .3s}.analysis span{display:block;font-size:.75rem;font-weight:750;text-transform:uppercase;letter-spacing:.03em;opacity:.9}.analysis strong{display:block;font-size:2.4rem;margin:4px 0}.analysis em{font-style:normal;font-size:.9rem}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
 .banner{max-width:760px;margin:10px auto 0;padding:0 12px}.banner button{width:100%;text-align:left;background:#fff3e0;border:1px solid #f0b36a;color:#7a4300;border-radius:11px;padding:10px 12px;font:600 .88rem system-ui;cursor:pointer}.bmsg{font-size:.85rem;min-height:1.2em;margin:10px 2px 0;color:var(--teal);font-weight:600}
 .action.danger{background:#fbe4e5;color:#8a2f36;grid-column:1/-1}.stat small{display:block;font-size:.72rem;color:#c6d9dc;margin-top:3px}.prog{font-weight:600;font-size:.8rem;color:var(--muted);margin-left:6px}.prog.ok{color:var(--teal)}.focus{background:#e8f3f1;border-left:4px solid var(--teal);border-radius:10px;padding:11px 13px;margin:0 0 6px;font-size:.9rem}.focus b{color:var(--teal)}
 .trend{margin:2px 0 0}.trend .tlabel{font-size:.78rem;font-weight:700;color:var(--muted);margin:4px 2px 2px}.trend svg{width:100%;height:auto;display:block}.trend text{font:10px system-ui,-apple-system,sans-serif;fill:var(--muted)}.trend .tnote{font-size:.8rem;color:var(--muted);margin:2px 2px 0}.trend .tnote b{color:var(--ink)}
 .hole.skip{background:#eef1f1;border-style:dashed;color:#9aa8ab;cursor:not-allowed}.hole.skip small{color:#9aa8ab}.hole.par{background:#fff}.hole.par.set{background:var(--mint);border-color:#9fcfc9;color:var(--teal)}.hole.par.set small{color:var(--teal);font-weight:700}.setup{margin-top:12px;border-top:1px solid var(--line);padding-top:6px}.setup .prog{margin-left:8px}
+.holegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.hcell{border:2px solid transparent;border-radius:12px;padding:9px 6px;text-align:center;color:#fff;font:inherit;cursor:pointer;min-height:78px;background:#f0f3f3}.hcell b{display:block;font-size:.72rem;opacity:.9;font-weight:700}.hcell strong{display:block;font-size:1.55rem;line-height:1.15}.hcell small{display:block;font-size:.68rem}.hcell.none{color:var(--ink);background:#f0f3f3;border-color:#dde5e5}.hcell.sel{border-color:var(--ink);outline:2px solid #fff;outline-offset:-5px}.hsub{grid-column:1/-1;background:var(--navy);color:#fff;border-radius:10px;padding:8px 12px;font-size:.85rem;display:flex;justify-content:space-between;gap:8px}.hsub b{font-weight:800}
+.hstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}.hstat{background:#f6f8f7;border-radius:10px;padding:8px}.hstat span{display:block;font-size:.66rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.02em}.hstat strong{display:block;font-size:1.1rem;margin-top:2px}.hstat small{display:block;font-size:.7rem;color:var(--muted)}
+.tblwrap{overflow-x:auto}.rt{width:100%;border-collapse:collapse;font-size:.8rem}.rt th{font-weight:700;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--line);font-size:.66rem;text-transform:uppercase}.rt td{text-align:center;padding:7px 2px;border-bottom:1px solid #eef1f1}.rt td.note{text-align:left;background:#f6f8f7;padding:6px 8px;font-size:.82rem}.rt td:first-child,.rt th:first-child{text-align:left}
 .rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
@@ -34,7 +37,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 </head>
 <body>
 <header><div class="eyebrow">PLAY READY GOLF</div><h1>SIMPLE STAT TRACKER</h1><p>Your round, your stats — saved on this device</p></header>
-<div class="tabs"><button type="button" class="tab on" id="tabRound">Current round</button><button type="button" class="tab" id="tabHist">History</button></div>
+<div class="tabs"><button type="button" class="tab on" id="tabRound">Current round</button><button type="button" class="tab" id="tabHist">History</button><button type="button" class="tab" id="tabHoles">Holes</button></div>
 <div class="banner hidden" id="bannerWrap"><button type="button" id="backupBanner"></button></div>
 <main>
 <div id="viewRound">
@@ -107,7 +110,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 <div id="viewHistory" class="hidden">
  <section class="panel">
   <div class="panel-head"><div class="num">📈</div><div><h2>Round history</h2><p>Averages across your most recent rounds.</p></div></div>
-  <div class="field"><label for="histN">Show</label><select id="histN"><option value="3">Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
+  <div class="field"><label for="histN">Show</label><select id="histN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
   <p class="save-note" id="histInfo"></p>
  </section>
  <section class="summary">
@@ -138,6 +141,20 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
   <div class="bmsg" id="backupMsg" role="status"></div>
   <p class="save-note">Tip: when the share sheet opens, choose "Save to Files" and pick iCloud Drive so the copy is stored off the phone. Restoring adds back any rounds that are missing and never overwrites rounds already on this device.</p>
  </section>
+</div>
+<div id="viewHoles" class="hidden">
+ <section class="panel">
+  <div class="panel-head"><div class="num">⛳</div><div><h2>Hole by hole</h2><p>Average score per hole. Tap a hole for its stats and notes.</p></div></div>
+  <div class="meta">
+   <div class="field"><label for="holesCourse">Course</label><select id="holesCourse"></select></div>
+   <div class="field"><label for="holesN">Show</label><select id="holesN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
+  </div>
+  <p class="save-note" id="holesInfo"></p>
+  <div class="focus hidden" id="holesHard"></div>
+  <div class="holegrid" id="holeGrid"></div>
+ </section>
+ <section class="panel hidden" id="holeDetail"></section>
+ <section class="panel hidden" id="otherNotesBox"><div class="panel-head" style="margin-bottom:6px"><div><h2 style="font-size:1rem">Other notes</h2><p>Lines in your notes that don't start with a hole number.</p></div></div><div id="otherNotes" style="font-size:.88rem"></div></section>
 </div>
 </main>
 <script>
@@ -244,8 +261,65 @@ function renderTrends(list){const chron=list.slice().reverse();
   if(pts.length>1){const sgn=m.goodHigh?1:-1,range=m.hi-m.lo,d=sgn*(pts[pts.length-1].v-pts[0].v)/range;
    note=`Trend: <b>${d>.03?'Improving':d<-.03?'Slipping':'Steady'}</b> (${m.fmt(pts[0].v)} → ${m.fmt(pts[pts.length-1].v)})`}
   el.innerHTML=`<div class="tlabel">Round by round (oldest to newest)</div>${trendSVG(m,pts)}<div class="tnote">${note}</div>`})}
-function showView(v){$('viewRound').classList.toggle('hidden',v!=='round');$('viewHistory').classList.toggle('hidden',v!=='hist');$('tabRound').classList.toggle('on',v==='round');$('tabHist').classList.toggle('on',v==='hist');if(v==='hist')renderHistory();window.scrollTo({top:0})}
-$('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('histN').onchange=renderHistory;
+// ---- Holes page
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Notes: "1. bunker shot" / "Hole 4: ..." / "10) ...". Lines without a hole number continue the previous hole's note.
+function parseNotes(text){const holes={},general=[];let cur=null;
+ String(text||'').split(/\r?\n/).forEach(line=>{const t=line.trim();if(!t)return;const m=t.match(/^(?:hole\s*)?(\d{1,2})(?:\.(?!\d)|[):\-–])\s*(.*)$/i);
+  if(m&&+m[1]>=1&&+m[1]<=18){cur=+m[1];holes[cur]=holes[cur]?holes[cur]+'; '+m[2]:m[2]}else if(cur){holes[cur]=(holes[cur]?holes[cur]+' ':'')+t}else general.push(t)});
+ return{holes,general}}
+let holeSel=null;
+const allSorted=()=>rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).map(x=>x.r);
+function holeColor(d){const t=Math.max(0,Math.min(1,d/1.6));return `hsl(${Math.round(125*(1-t))},70%,34%)`}
+const num=v=>v!==''&&v!=null&&!isNaN(Number(v));
+const f1=v=>(Math.round(v*10)/10).toString();
+function holeData(list,i){const rows=list.map(r=>{const tee=teeArr(r)[i],sc=num((r.scores||[])[i])?Number((r.scores||[])[i]):null;
+  return{r,par:(r.pars||[])[i]||null,score:sc,tee:tee===true||tee===false?tee:null,app:num((r.approaches||[])[i])?Number(r.approaches[i]):null,chip:(r.chips||[])[i]===true||(r.chips||[])[i]===false?r.chips[i]:null,in8:(r.inside||[])[i]===true||(r.inside||[])[i]===false?r.inside[i]:null,out:num((r.outside||[])[i])?Number(r.outside[i]):null,note:(parseNotes(r.notes).holes[i+1]||'').trim()}});
+ const par=(rows.find(x=>x.par)||{}).par||null,sc=rows.filter(x=>x.score!==null),avg=sc.length?sc.reduce((t,x)=>t+x.score,0)/sc.length:null;
+ const withPar=sc.filter(x=>x.par),d=withPar.length?withPar.reduce((t,x)=>t+x.score-x.par,0)/withPar.length:null;
+ return{rows,par,avg,d,n:sc.length}}
+function renderHoles(){
+ const courses=new Map();allSorted().forEach(r=>{const k=courseKey(r.course);if(!courses.has(k))courses.set(k,(r.course||'').trim()||'(no course name)')});
+ const sel=$('holesCourse'),prev=sel.value;sel.innerHTML='';courses.forEach((label,k)=>{const o=document.createElement('option');o.value=k;o.textContent=label;sel.append(o)});
+ if(courses.has(prev))sel.value=prev;
+ const n=Number($('holesN').value)||3,list=allSorted().filter(r=>courseKey(r.course)===sel.value).slice(0,n);
+ $('holesInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''}${courses.size?' at '+courses.get(sel.value):''}${list.length<n?` (that's all you have saved there so far)`:''}.`:'No rounds with data yet. Record a round first.';
+ const grid=$('holeGrid');grid.innerHTML='';const data=Array.from({length:18},(_,i)=>holeData(list,i));
+ data.forEach((h,i)=>{const b=document.createElement('button');b.type='button';
+  const has=h.avg!==null;b.className='hcell'+(has&&h.d!==null?'':' none')+(holeSel===i?' sel':'');if(has&&h.d!==null)b.style.background=holeColor(h.d);
+  b.innerHTML=`<b>HOLE ${i+1}</b><strong>${has?f1(h.avg):'—'}</strong><small>${h.par?'Par '+h.par:'no par set'}${has&&h.d!==null?' · '+(h.d>0?'+':'')+f1(h.d):''}</small>`;
+  b.onclick=()=>{holeSel=holeSel===i?null:i;renderHoles()};grid.append(b);
+  if(i===8||i===17){const a=i===8?0:9,part=data.slice(a,a+9),ok=part.every(x=>x.avg!==null),tot=ok?part.reduce((t,x)=>t+x.avg,0):null,pp=part.every(x=>x.par)?part.reduce((t,x)=>t+x.par,0):null;
+   const div=document.createElement('div');div.className='hsub';div.innerHTML=`<span>${i===8?'Out (1–9)':'In (10–18)'}</span><span><b>${tot!==null?f1(tot):'—'}</b>${tot!==null&&pp!==null?` (${fmtPar(Math.round((tot-pp)*10)/10)}) · par ${pp}`:pp!==null?` · par ${pp}`:''}</span>`;grid.append(div)}});
+ // hardest holes
+ const hard=data.map((h,i)=>({i,d:h.d})).filter(x=>x.d!==null&&x.d>0).sort((a,b)=>b.d-a.d).slice(0,3),hb=$('holesHard');
+ if(hard.length){hb.classList.remove('hidden');hb.innerHTML='<b>Hardest holes:</b> '+hard.map(x=>`${x.i+1} (+${f1(x.d)})`).join(' · ')}else hb.classList.add('hidden');
+ renderHoleDetail(list,data);
+ // other notes
+ const other=[];list.forEach(r=>{const g=parseNotes(r.notes).general;if(g.length)other.push(`<p style="margin:0 0 8px"><b>${esc(dmy(r.date)||'—')}</b> ${esc(g.join(' '))}</p>`)});
+ $('otherNotesBox').classList.toggle('hidden',!other.length);$('otherNotes').innerHTML=other.join('')}
+function renderHoleDetail(list,data){const box=$('holeDetail');if(holeSel===null||!list.length){box.classList.add('hidden');return}
+ const h=data[holeSel],rows=h.rows,cnt=k=>{const v=rows.filter(x=>x[k]!==null);return{y:v.filter(x=>x[k]===true).length,t:v.length}};
+ const tee=cnt('tee'),chip=cnt('chip'),in8=cnt('in8'),app=rows.filter(x=>x.app!==null),out=rows.filter(x=>x.out!==null);
+ const ofn=(c,w)=>c.t?`<strong>${c.y} of ${c.t}</strong><small>${Math.round(c.y/c.t*100)}% ${w}</small>`:'<strong>—</strong>';
+ const yn2=v=>v===true?'✓':v===false?'✗':'–';
+ box.classList.remove('hidden');
+ box.innerHTML=`<div class="panel-head" style="margin-bottom:0"><div class="num">${holeSel+1}</div><div><h2>Hole ${holeSel+1}${h.par?' · Par '+h.par:''}</h2><p>${list.length>1?'Across '+list.length+' rounds':'Last round'}</p></div></div>
+ <div class="hstats">
+  <div class="hstat"><span>Avg score</span>${h.avg!==null?`<strong>${f1(h.avg)}</strong><small>${h.d!==null?(h.d>0?'+':'')+f1(h.d)+' vs par · ':''}${h.n} round${h.n>1?'s':''}</small>`:'<strong>—</strong>'}</div>
+  <div class="hstat"><span>Fairway</span>${ofn(tee,'hit')}</div>
+  <div class="hstat"><span>From 150 in</span>${app.length?`<strong>${f1(app.reduce((t,x)=>t+x.app,0)/app.length)}</strong><small>avg strokes</small>`:'<strong>—</strong>'}</div>
+  <div class="hstat"><span>Chip ≤ 20 ft</span>${ofn(chip,'inside')}</div>
+  <div class="hstat"><span>Putt ≤ 8 ft</span>${ofn(in8,'made')}</div>
+  <div class="hstat"><span>Putts 30 ft+</span>${out.length?`<strong>${f1(out.reduce((t,x)=>t+x.out,0)/out.length)}</strong><small>avg putts</small>`:'<strong>—</strong>'}</div>
+ </div>
+ <div class="tblwrap"><table class="rt"><thead><tr><th>Date</th><th>Score</th><th>Tee</th><th>150 in</th><th>Chip</th><th>≤8 ft</th><th>30 ft+</th></tr></thead><tbody>`+
+ rows.map(x=>`<tr><td>${esc(dmy(x.r.date)||'—')}</td><td><b>${x.score!==null?x.score:'–'}</b>${x.score!==null&&x.par?` <span style="color:var(--muted);font-size:.72rem">(${fmtPar(x.score-x.par)})</span>`:''}</td><td>${yn2(x.tee)}</td><td>${x.app!==null?x.app:'–'}</td><td>${yn2(x.chip)}</td><td>${yn2(x.in8)}</td><td>${x.out!==null?x.out:'–'}</td></tr>`+(x.note?`<tr><td class="note" colspan="7">📝 ${esc(x.note)}</td></tr>`:'')).join('')+
+ `</tbody></table></div><p class="save-note">✓ yes / made · ✗ no / missed · – not recorded. Par 3 tee shots aren't counted.</p>`}
+function setN(v){$('histN').value=v;$('holesN').value=v;if(!$('viewHistory').classList.contains('hidden'))renderHistory();if(!$('viewHoles').classList.contains('hidden'))renderHoles()}
+function showView(v){['round','hist','holes'].forEach(k=>{const id={round:'viewRound',hist:'viewHistory',holes:'viewHoles'}[k],tab={round:'tabRound',hist:'tabHist',holes:'tabHoles'}[k];$(id).classList.toggle('hidden',v!==k);$(tab).classList.toggle('on',v===k)});if(v==='hist')renderHistory();if(v==='holes')renderHoles();window.scrollTo({top:0})}
+$('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('tabHoles').onclick=()=>showView('holes');
+$('histN').onchange=e=>setN(e.target.value);$('holesN').onchange=e=>setN(e.target.value);$('holesCourse').onchange=()=>{holeSel=null;renderHoles()};
 // ---- Backup & restore
 const BK_KEY='playReadyGolfLastBackup';
 const getLS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
