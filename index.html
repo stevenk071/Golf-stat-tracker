@@ -53,7 +53,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
  <div class="status" id="saveStatus" role="status" style="color:var(--teal)"></div>
  <details class="setup">
   <summary>Course setup (par per hole) <span class="prog" id="parProg"></span></summary>
-  <p style="font-size:.82rem;color:var(--muted);margin:6px 0 10px">Tap a hole to cycle Par 4 → 5 → 3 → blank. Pars are remembered for this course name, so you only enter them once. Par 3s are skipped automatically in "Driving &amp; tee shots", and scores are shown against par.</p>
+  <p style="font-size:.82rem;color:var(--muted);margin:6px 0 10px">Tap a hole to cycle Par 4 → 5 → 3 → blank. Pars are remembered for this exact course name, so you only enter them once. If your course has several nine-hole combinations, put the combination in the name (e.g. Black Bush CA). Par 3s are skipped automatically in "Driving &amp; tee shots", and scores are shown against par.</p>
   <div class="holes" id="parHoles"></div>
  </details>
 </section>
@@ -110,10 +110,7 @@ details summary{font-weight:750;cursor:pointer;padding:5px 0}.hidden{display:non
 <div id="viewHistory" class="hidden">
  <section class="panel">
   <div class="panel-head"><div class="num">📈</div><div><h2>Round history</h2><p>Averages across your most recent rounds.</p></div></div>
-  <div class="meta">
-   <div class="field"><label for="histCourse">Course</label><select id="histCourse"><option value="*">All courses</option></select></div>
-   <div class="field"><label for="histN">Show</label><select id="histN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div>
-  </div>
+  <div class="meta"><div class="field"><label for="histCourse">Course</label><select id="histCourse"><option value="*">All courses</option></select></div><div class="field"><label for="histN">Show</label><select id="histN"><option value="1">Last round</option><option value="3" selected>Last 3 rounds</option><option value="5">Last 5 rounds</option><option value="10">Last 10 rounds</option><option value="20">Last 20 rounds</option></select></div></div>
   <p class="save-note" id="histInfo"></p>
  </section>
  <section class="summary">
@@ -228,18 +225,13 @@ function updateAnalysis(){updateMetrics('r',m=>m.calc(current))}
 const hasData=r=>[r.tee,r.chips,r.inside].some(a=>(a||[]).some(v=>v===true||v===false))||filled(r.approaches||[]).length>0||filled(r.outside||[]).length>0||filled(r.scores||[]).length>0;
 const roundScore=r=>{const a=filled(r.scores||[]);return a.length===18?a.reduce((n,v)=>n+v,0):null};
 const roundTitle=r=>(r.name||r.course||'Untitled round')+(r.date?' · '+r.date:'');
-function historyRounds(){const n=Number($('histN').value)||3,course=$('histCourse').value;
+function historyRounds(){const n=Number($('histN').value)||3;
  // newest first by date; rounds without a date keep their saved order (newest first) after dated ones
- return rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)&&(course==='*'||courseKey(x.r.course)===course)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).slice(0,n).map(x=>x.r)}
-function renderHistory(){
- const courseSel=$('histCourse'),prev=courseSel.value,courses=new Map();
- rounds.filter(hasData).forEach(r=>{const k=courseKey(r.course);if(!courses.has(k))courses.set(k,(r.course||'').trim()||'(no course name)')});
- courseSel.innerHTML='';const all=document.createElement('option');all.value='*';all.textContent='All courses';courseSel.append(all);
- courses.forEach((label,k)=>{const o=document.createElement('option');o.value=k;o.textContent=label;courseSel.append(o)});
- courseSel.value=prev==='*'||courses.has(prev)?prev:'*';
- const list=historyRounds(),n=Number($('histN').value)||3,selectedCourse=courseSel.value==='*'?'all courses':courses.get(courseSel.value);
-
- $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''} from ${selectedCourse}${list.length<n?` (that's all the matching rounds with data so far)`:''}.`:`No rounds with data for ${selectedCourse}. Record a round first.`;
+ return rounds.map((r,i)=>({r,i})).filter(x=>hasData(x.r)).filter(x=>$('histCourse').value==='*'||courseKey(x.r.course)===($('histCourse').value==='_none'?'':$('histCourse').value)).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||'')||a.i-b.i).slice(0,n).map(x=>x.r)}
+function fillHistCourses(){const sel=$('histCourse'),prev=sel.value||'*',m=new Map();allSorted().forEach(r=>{const k=courseKey(r.course);if(!m.has(k))m.set(k,(r.course||'').trim()||'(no course name)')});
+ sel.innerHTML='';const all=document.createElement('option');all.value='*';all.textContent='All courses';sel.append(all);m.forEach((l,k)=>{const o=document.createElement('option');o.value=k||'_none';o.textContent=l;sel.append(o)});sel.value=(prev==='*'||m.has(prev==='_none'?'':prev))?prev:'*'}
+function renderHistory(){fillHistCourses();const list=historyRounds(),n=Number($('histN').value)||3,cname=$('histCourse').value==='*'?'':' at '+$('histCourse').selectedOptions[0].textContent;
+ $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''}${cname}${list.length<n?` (you have saved ${list.length} with data${cname?' there':''} so far)`:''}.`:'No rounds with data yet. Record a round first.';
  updateMetrics('h',m=>{const vals=list.map(r=>m.calc(r)).filter(Boolean);if(!vals.length)return null;return{v:vals.reduce((t,x)=>t+x.v,0)/vals.length,detail:`Average of ${vals.length} round${vals.length>1?'s':''}`}});
  renderTrends(list);
  const sc=list.map(roundScore).filter(v=>v!==null);
@@ -329,7 +321,7 @@ function renderHoleDetail(list,data){const box=$('holeDetail');if(holeSel===null
 function setN(v){$('histN').value=v;$('holesN').value=v;if(!$('viewHistory').classList.contains('hidden'))renderHistory();if(!$('viewHoles').classList.contains('hidden'))renderHoles()}
 function showView(v){['round','hist','holes'].forEach(k=>{const id={round:'viewRound',hist:'viewHistory',holes:'viewHoles'}[k],tab={round:'tabRound',hist:'tabHist',holes:'tabHoles'}[k];$(id).classList.toggle('hidden',v!==k);$(tab).classList.toggle('on',v===k)});if(v==='hist')renderHistory();if(v==='holes')renderHoles();window.scrollTo({top:0})}
 $('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('tabHoles').onclick=()=>showView('holes');
-$('histN').onchange=e=>setN(e.target.value);$('histCourse').onchange=renderHistory;$('holesN').onchange=e=>setN(e.target.value);$('holesCourse').onchange=()=>{holeSel=null;renderHoles()};
+$('histCourse').onchange=renderHistory;$('histN').onchange=e=>setN(e.target.value);$('holesN').onchange=e=>setN(e.target.value);$('holesCourse').onchange=()=>{holeSel=null;renderHoles()};
 // ---- Backup & restore
 const BK_KEY='playReadyGolfLastBackup';
 const getLS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
@@ -374,20 +366,24 @@ const loadLib=()=>{try{return JSON.parse(getLS(COURSE_KEY)||'{}')||{}}catch(e){r
 const courseKey=n=>(n||'').trim().toLowerCase();
 const hasPars=r=>(r.pars||[]).some(v=>v);
 function saveCoursePars(){const k=courseKey(current.course);if(!k||!hasPars(current))return;const lib=loadLib();lib[k]=current.pars.slice();setLS(COURSE_KEY,JSON.stringify(lib))}
-function applyCoursePars(){const k=courseKey($('course').value),lib=loadLib();if(k&&lib[k]&&!hasPars(current)){current.pars=lib[k].slice();current.course=$('course').value;renderPars();renderToggles();persist();updateSummary();$('saveStatus').textContent='Pars filled in from your saved course ✓'}}
+function applyCoursePars(){const name=$('course').value,k=courseKey(name),lib=loadLib();current.course=name;let msg='';
+ if(k&&lib[k]&&(!hasPars(current)||(current.parsSrc&&current.parsSrc!==k))){current.pars=lib[k].slice();current.parsSrc=k;msg='Pars filled in from your saved course ✓'}
+ else if(k&&!lib[k]&&current.parsSrc){current.pars=Array(18).fill(null);delete current.parsSrc;msg='New course name: pars cleared. Set them in Course setup.'}
+ else if(k&&!lib[k]&&hasPars(current)){saveCoursePars()}
+ renderPars();renderToggles();persist();updateSummary();if(msg)$('saveStatus').textContent=msg}
 function seedLib(){const lib=loadLib();let ch=false;rounds.forEach(r=>{const k=courseKey(r.course);if(k&&hasPars(r)&&!lib[k]){lib[k]=r.pars.slice();ch=true}});if(ch)setLS(COURSE_KEY,JSON.stringify(lib))}
 const totalPar=r=>{const p=r.pars||[];return p.length===18&&p.every(v=>v)?p.reduce((n,v)=>n+v,0):null};
 const fmtPar=n=>n===0?'E':(n>0?'+':'')+n;
 function roundToPar(r){const sc=roundScore(r),tp=totalPar(r);return sc!==null&&tp!==null?sc-tp:null}
 function makePars(){const root=$('parHoles');root.innerHTML='';for(let i=0;i<18;i++){const b=document.createElement('button');b.type='button';b.className='hole par';b.innerHTML=`<span>${i+1}</span><small></small>`;
- b.onclick=()=>{const v=current.pars[i];current.pars[i]=v==null?4:v===4?5:v===5?3:null;saveCoursePars();renderPars();renderToggles();updateRound()};root.append(b)}}
+ b.onclick=()=>{const v=current.pars[i];current.pars[i]=v==null?4:v===4?5:v===5?3:null;delete current.parsSrc;saveCoursePars();renderPars();renderToggles();updateRound()};root.append(b)}}
 function renderPars(){[...$('parHoles').children].forEach((b,i)=>{const v=current.pars[i];b.classList.toggle('set',!!v);b.querySelector('small').textContent=v?'Par '+v:'Tap'});
  const n=current.pars.filter(Boolean).length,tp=totalPar(current);$('parProg').textContent=tp!==null?'Par '+tp:n?`${n} of 18 set`:'not set'}
 function loadCurrent(){ $('course').value=current.course||'';$('roundDate').value=current.date||'';$('roundName').value=current.name||'';$('notes').value=current.notes||'';renderSelect();renderPars();renderToggles();renderInputs();updateSummary();$('saveStatus').textContent='';}
 function selectRound(id){let r=rounds.find(x=>x.id===id);if(r){current=r;loadCurrent()}}
 $('roundSelect').onchange=e=>selectRound(e.target.value);
 ['course','roundDate','roundName','notes'].forEach(id=>$(id).addEventListener('input',updateRound));
-$('course').addEventListener('input',applyCoursePars);
+$('course').addEventListener('change',applyCoursePars);
 $('newRound').onclick=()=>{updateRound();current=blank();rounds.unshift(current);persist();loadCurrent();window.scrollTo({top:0,behavior:'smooth'})};
 $('deleteRound').onclick=()=>{updateRound();if(!confirm(`Delete "${roundTitle(current)}"?\n\nThis cannot be undone unless you have a backup.`))return;rounds=rounds.filter(r=>r!==current);if(!rounds.length){rounds.push(blank())}current=rounds[0];persist();loadCurrent();refreshBackupUI();renderHistory();$('saveStatus').textContent='Round deleted'};
 $('saveRound').onclick=()=>{updateRound();$('saveStatus').textContent='Round saved ✓'};
