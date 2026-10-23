@@ -21,6 +21,7 @@ main{max-width:760px;margin:auto;padding:14px 12px 100px}.panel{background:white
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:760px;margin:14px auto 0;padding:0 12px}.tab{border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px;font:700 .95rem system-ui;cursor:pointer}.tab.on{background:var(--teal);border-color:var(--teal);color:white}
 .banner{max-width:760px;margin:10px auto 0;padding:0 12px}.banner button{width:100%;text-align:left;background:#fff3e0;border:1px solid #f0b36a;color:#7a4300;border-radius:11px;padding:10px 12px;font:600 .88rem system-ui;cursor:pointer}.bmsg{font-size:.85rem;min-height:1.2em;margin:10px 2px 0;color:var(--teal);font-weight:600}
 .action.danger{background:#fbe4e5;color:#8a2f36;grid-column:1/-1}.stat small{display:block;font-size:.72rem;color:#c6d9dc;margin-top:3px}.prog{font-weight:600;font-size:.8rem;color:var(--muted);margin-left:6px}.prog.ok{color:var(--teal)}.focus{background:#e8f3f1;border-left:4px solid var(--teal);border-radius:10px;padding:11px 13px;margin:0 0 6px;font-size:.9rem}.focus b{color:var(--teal)}
+.trend{margin:2px 0 0}.trend .tlabel{font-size:.78rem;font-weight:700;color:var(--muted);margin:4px 2px 2px}.trend svg{width:100%;height:auto;display:block}.trend text{font:10px system-ui,-apple-system,sans-serif;fill:var(--muted)}.trend .tnote{font-size:.8rem;color:var(--muted);margin:2px 2px 0}.trend .tnote b{color:var(--ink)}
 .rlist{list-style:none;margin:10px 0 0;padding:0;font-size:.85rem}.rlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #49616a}.rlist li span:last-child{font-weight:800;white-space:nowrap}.analysis small{display:block;font-size:.85rem;opacity:.9;margin-bottom:4px}.metric{margin:18px 0 26px}.metric:first-of-type{margin-top:6px}.mtitle{font-size:.95rem;margin:0 0 8px}
 .scale{margin:16px 4px 4px}.bar{position:relative;height:14px;border-radius:7px}.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);transform:translateX(-1px)}.bar i{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:none;z-index:1}.ticks{position:relative;height:2.6em;margin-top:8px;font-size:.72rem;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25;white-space:nowrap}.hole:focus-visible,button:focus-visible{outline:3px solid #ef9298;outline-offset:2px}
 .scoregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hole-score{background:#f6f8f7;border-radius:10px;padding:8px}.hole-score label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}.hole-score input{padding:8px}
@@ -169,7 +170,7 @@ function buildMetrics(rootId,pre){const root=$(rootId);root.innerHTML='';const f
  const stops=[];for(let p=50;p<=100;p+=5)stops.push(`hsl(${hueFor(p).toFixed(0)},70%,36%) ${(p-50)*2}%`);const grad=`linear-gradient(to right,${stops.join(',')})`;
  METRICS.forEach(m=>{const pos=v=>Math.max(0,Math.min(100,(m.goodHigh?v-m.lo:m.hi-v)/(m.hi-m.lo)*100));
   const d=document.createElement('div');d.className='metric';
-  d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${pre}${m.id}Box"><strong id="${pre}${m.id}Big">—</strong><small id="${pre}${m.id}Detail"></small><em id="${pre}${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${pre}${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>`;
+  d.innerHTML=`<h3 class="mtitle">${m.title}</h3><div class="analysis" id="${pre}${m.id}Box"><strong id="${pre}${m.id}Big">—</strong><small id="${pre}${m.id}Detail"></small><em id="${pre}${m.id}Label">${m.empty}</em></div><div class="scale"><div class="bar" style="background:${grad}"><i id="${pre}${m.id}Ptr"></i>${m.b.map(v=>`<b style="left:${pos(v)}%"></b>`).join('')}</div><div class="ticks"><span style="left:0;transform:none;text-align:left">${m.endL}</span>${m.b.map((v,i)=>`<span style="left:${pos(v)}%">${['20 hcp','10 hcp','Scratch'][i]}<br>${m.fmt(v)}</span>`).join('')}<span style="right:0;left:auto;transform:none;text-align:right">${m.endR}</span></div></div>${pre==='h'?`<div class="trend" id="hTrend${m.id}"></div>`:''}`;
   root.append(d)})}
 function updateMetrics(pre,resultFn){const res={};METRICS.forEach(m=>{const box=$(pre+m.id+'Box'),ptr=$(pre+m.id+'Ptr'),r=resultFn(m);
  if(!r){ptr.style.display='none';box.style.background='';box.style.color='';$(pre+m.id+'Big').textContent='—';$(pre+m.id+'Detail').textContent='';$(pre+m.id+'Label').textContent=m.empty;return}
@@ -197,10 +198,30 @@ function historyRounds(){const n=Number($('histN').value)||3;
 function renderHistory(){const list=historyRounds(),n=Number($('histN').value)||3;
  $('histInfo').textContent=list.length?`Using ${list.length} round${list.length>1?'s':''}${list.length<n?` (you have saved ${list.length} with data so far)`:''}.`:'No rounds with data yet. Record a round first.';
  updateMetrics('h',m=>{const vals=list.map(r=>m.calc(r)).filter(Boolean);if(!vals.length)return null;return{v:vals.reduce((t,x)=>t+x.v,0)/vals.length,detail:`Average of ${vals.length} round${vals.length>1?'s':''}`}});
+ renderTrends(list);
  const sc=list.map(roundScore).filter(v=>v!==null);
  $('histBest').textContent=sc.length?Math.min(...sc):'—';
  $('histAvg').textContent=sc.length?(sc.reduce((t,v)=>t+v,0)/sc.length).toFixed(1).replace(/\.0$/,''):'—';
  const ul=$('histList');ul.innerHTML='';list.forEach(r=>{const li=document.createElement('li'),sc=roundScore(r);const a=document.createElement('span'),b=document.createElement('span');a.textContent=roundTitle(r);b.textContent=sc===null?'no score':sc;li.append(a,b);ul.append(li)})}
+// ---- Trend lines (History): one small line per stat, oldest round on the left, better results higher up
+const dmy=d=>d&&d.length>=10?d.slice(8,10)+'/'+d.slice(5,7):'';
+function trendSVG(m,pts){const W=320,H=130,L=10,R=48,T=18,B=22,n=pts.length;
+ const q=v=>Math.max(0,Math.min(1,(m.goodHigh?v-m.lo:m.hi-v)/(m.hi-m.lo))),Y=v=>T+(1-q(v))*(H-T-B),X=i=>n===1?W/2:L+16+i*((W-L-R-32)/(n-1));
+ let g='';
+ m.b.forEach((v,i)=>{const y=Y(v),mid=i===1;g+=`<line x1="${L}" x2="${W-R+2}" y1="${y}" y2="${y}" stroke="${mid?'#176b70':'#b8c4c6'}" stroke-width="${mid?1.4:1}" stroke-dasharray="${mid?'5 3':'2 3'}"/><text x="${W-R+5}" y="${y+3.5}" text-anchor="start"${mid?' style="fill:#176b70;font-weight:700"':''}>${['20 hcp','10 hcp','Scratch'][i]}</text>`});
+ if(n>1)g+=`<polyline fill="none" stroke="#10232d" stroke-width="2" stroke-linejoin="round" points="${pts.map((p,i)=>X(i).toFixed(1)+','+Y(p.v).toFixed(1)).join(' ')}"/>`;
+ pts.forEach((p,i)=>{const x=X(i),y=Y(p.v);g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="${colorFor(q(p.v))}" stroke="#fff" stroke-width="1.5"/>`;
+  if(n<=8||i===n-1)g+=`<text x="${x.toFixed(1)}" y="${(y-9).toFixed(1)}" text-anchor="middle" style="fill:#16272e;font-weight:700">${m.fmt(p.v)}</text>`;
+  if(n<=8||i===0||i===n-1)g+=`<text x="${x.toFixed(1)}" y="${H-6}" text-anchor="${n>1&&i===0?'start':n>1&&i===n-1?'end':'middle'}">${p.d}</text>`});
+ return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.title} round by round">${g}</svg>`}
+function renderTrends(list){const chron=list.slice().reverse();
+ METRICS.forEach(m=>{const el=$('hTrend'+m.id);if(!el)return;
+  const pts=chron.map(r=>{const x=m.calc(r);return x?{v:x.v,d:dmy(r.date)}:null}).filter(Boolean);
+  if(!pts.length){el.innerHTML='';return}
+  let note='Add another round to see a trend.';
+  if(pts.length>1){const sgn=m.goodHigh?1:-1,range=m.hi-m.lo,d=sgn*(pts[pts.length-1].v-pts[0].v)/range;
+   note=`Trend: <b>${d>.03?'Improving':d<-.03?'Slipping':'Steady'}</b> (${m.fmt(pts[0].v)} → ${m.fmt(pts[pts.length-1].v)})`}
+  el.innerHTML=`<div class="tlabel">Round by round (oldest to newest)</div>${trendSVG(m,pts)}<div class="tnote">${note}</div>`})}
 function showView(v){$('viewRound').classList.toggle('hidden',v!=='round');$('viewHistory').classList.toggle('hidden',v!=='hist');$('tabRound').classList.toggle('on',v==='round');$('tabHist').classList.toggle('on',v==='hist');if(v==='hist')renderHistory();window.scrollTo({top:0})}
 $('tabRound').onclick=()=>showView('round');$('tabHist').onclick=()=>showView('hist');$('histN').onchange=renderHistory;
 // ---- Backup & restore
